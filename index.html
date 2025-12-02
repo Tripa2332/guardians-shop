@@ -3,9 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+    <title>The Guardians - Tienda Oficial ARK</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'ark': ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        // Azul eléctrico (como los rayos)
+                        'guardian-blue': '#00dddf', 
+                        // Dorado metálico (como el escudo/armadura)
+                        'guardian-gold': '#d4af37', 
+                        // Fondo azul oscuro profundo
+                        'guardian-dark': '#0b1121',
+                        // Color para paneles semitransparentes
+                        'guardian-panel': '#131b2e',
+                    },
+                    boxShadow: {
+                        // Sombra azul eléctrica personalizada
+                        'neon-blue': '0 0 15px rgba(0, 221, 223, 0.5)',
+                         // Sombra dorada personalizada
+                        'neon-gold': '0 0 15px rgba(212, 175, 55, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; }
+
+        /* Estilo de cristal actualizado para el tema oscuro/azul */
+        .glass-panel {
+            background: rgba(19, 27, 46, 0.8); /* Usando guardian-panel con transparencia */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 221, 223, 0.1); /* Borde azul sutil */
+            transition: all 0.3s ease;
+        }
+
+        /* Efecto al pasar el mouse sobre las categorías */
+        .glass-panel:hover {
+            border-color: #d4af37; /* Cambia a borde dorado */
+            box-shadow: 0 0 20px rgba(0, 221, 223, 0.4); /* Brillo azul intenso */
+            transform: translateY(-5px);
+        }
+        
+        /* Clase utilitaria para texto con gradiente dorado */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #d4af37, #fceabb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-guardian-dark text-gray-200">
+
+    <nav class="fixed w-full z-50 glass-panel border-b border-blue-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24"> <div class="flex items-center flex-shrink-0">
+                    
+                    <a href="#">
+                        <img src="C:\Users\Joaquín\Desktop\Proyecto X\guardians-shop\img\textoLogo.png" alt="The Guardians Logo" class="h-12 w-auto object-contain">
+                    </a>
+
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8 uppercase tracking-wider text-sm font-bold">
+                        <a href="#" class="hover:text-guardian-blue px-3 py-2 transition duration-300">Inicio</a>
+                        <a href="#categorias" class="hover:text-guardian-blue px-3 py-2 transition duration-300">Categorías</a>
+                        <a href="#destacados" class="hover:text-guardian-blue px-3 py-2 transition duration-300">Tienda</a>
+                        <a href="#" class="bg-guardian-blue text-guardian-dark px-5 py-2 rounded font-bold hover:bg-guardian-gold transition duration-300 flex items-center">
+                            <i class="fas fa-shopping-cart mr-2"></i> Carrito
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://wallpapers.com/images/hd/ark-survival-evolved-brontosaurus-and-t-rex-qg6j3b8y4k9l5m2n.jpg" alt="ARK Background" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-guardian-dark via-guardian-dark/80 to-guardian-dark"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 pt-20">
+            
+            <div class="mb-8 flex justify-center">
+                 <img src="https://via.placeholder.com/500x500/0b1121/00dddf?text=LOGO+GUERRERA+AQUI" alt="The Guardians Main Logo" class="h-64 w-auto object-contain drop-shadow-[0_0_25px_rgba(0,221,223,0.4)]">
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-bold mb-4 tracking-[0.2em] uppercase text-guardian-gold">
+                Bienvenido al Servidor
+            </h2>
+            <p class="text-lg text-gray-400 mb-10 max-w-xl mx-auto">
+                Equípate con los mejores kits, rangos exclusivos y criaturas legendarias para dominar el ARK.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4 font-bold uppercase tracking-wider">
+                <a href="#destacados" class="bg-guardian-blue text-guardian-dark py-4 px-10 rounded hover:bg-white hover:shadow-neon-blue transition duration-300">
+                    Ver Productos
+                </a>
+                <a href="#" class="border-2 border-guardian-gold text-guardian-gold py-4 px-10 rounded hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold transition duration-300 flex items-center justify-center">
+                    <i class="fab fa-discord mr-3 text-xl"></i> Unirse a Discord
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <section id="categorias" class="py-24 bg-guardian-dark relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-guardian-blue opacity-5 blur-[150px] rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                 <h2 class="text-4xl font-bold uppercase tracking-wider text-white inline-block relative">
+                    <span class="text-guardian-gold">Explorar</span> Categorías
+                    <div class="absolute w-1/2 h-1 bg-guardian-blue bottom-0 left-1/4 translate-y-4"></div>
+                 </h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
+                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-white group-hover:text-guardian-blue transition">Rangos VIP</h3>
+                    <p class="text-gray-500">Beneficios exclusivos, kits diarios y estatus en el servidor.</p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
+                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                        <i class="fas fa-shield-alt"></i> </div>
+                    <h3 class="text-2xl font-bold mb-3 text-white group-hover:text-guardian-blue transition">Kits de Inicio</h3>
+                    <p class="text-gray-500">Empieza fuerte con armaduras, armas y recursos esenciales.</p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
+                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-white group-hover:text-guardian-blue transition">Criaturas Top</h3>
+                    <p class="text-gray-500">Dinos con estadísticas perfectas listos para la batalla.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="destacados" class="py-24 bg-gradient-to-b from-guardian-dark to-black relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <div class="text-center mb-16">
+                 <h2 class="text-4xl font-bold uppercase tracking-wider text-white">
+                    Destacados del <span class="text-guardian-blue">Mercado</span>
+                 </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="bg-guardian-panel rounded-xl overflow-hidden border border-blue-900/50 hover:border-guardian-gold hover:shadow-neon-blue transition-all duration-500 group">
+                    <div class="relative">
+                         <img src="https://via.placeholder.com/300x200/162032/00dddf?text=Pack+Guardián" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
+                        <div class="absolute top-0 right-0 bg-guardian-gold text-guardian-dark text-xs font-bold px-3 py-1 uppercase rounded-bl-lg">
+                            Oferta
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white group-hover:text-guardian-blue transition">Pack Guardián Supremo</h3>
+                        <ul class="text-sm text-gray-400 mb-6 space-y-2">
+                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Rango "Guardián" (30 días)</li>
+                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> 1x Giga Max Stats</li>
+                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Kit de Construcción Tek</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-3xl font-bold text-white">$25.00</span>
+                            <button class="bg-transparent border-2 border-guardian-blue text-guardian-blue hover:bg-guardian-blue hover:text-guardian-dark hover:shadow-neon-blue p-3 rounded-lg transition duration-300">
+                                <i class="fas fa-shopping-basket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-guardian-panel rounded-xl overflow-hidden border border-blue-900/50 hover:border-guardian-gold hover:shadow-neon-blue transition-all duration-500 group">
+                    <div class="relative">
+                        <img src="https://via.placeholder.com/300x200/162032/d4af37?text=Kit+PVP" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white group-hover:text-guardian-blue transition">Kit PvP Avanzado</h3>
+                        <ul class="text-sm text-gray-400 mb-6 space-y-2">
+                             <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Flak Armor (Ascendant)</li>
+                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Weapons Pack & Ammo</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-3xl font-bold text-white">$10.00</span>
+                            <button class="bg-transparent border-2 border-guardian-blue text-guardian-blue hover:bg-guardian-blue hover:text-guardian-dark hover:shadow-neon-blue p-3 rounded-lg transition duration-300">
+                                <i class="fas fa-shopping-basket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-12 border-t border-blue-900/50">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center">
+            <div class="mb-8 sm:mb-0 text-left">
+                 <h2 class="text-2xl font-bold text-guardian-gold tracking-widest uppercase mb-2">The Guardians</h2>
+                <p class="text-gray-500 text-sm">Dominando el ARK desde 2023.</p>
+            </div>
+            <div>
+                 <div class="flex justify-center sm:justify-end space-x-6 mb-4">
+                    <a href="#" class="text-gray-500 hover:text-[#5865F2] transition transform hover:-translate-y-1"><i class="fab fa-discord text-3xl"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-[#1DA1F2] transition transform hover:-translate-y-1"><i class="fab fa-twitter text-3xl"></i></a>
+                </div>
+                <p class="text-gray-600 text-sm">
+                    &copy; 2023 The Guardians. No afiliado con Studio Wildcard.
+                </p>
+            </div>
+        </div>
+    </footer>
+
 </body>
-</html> 
+</html>
