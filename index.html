@@ -6,9 +6,7 @@
     <title>The Guardians - Tienda Oficial ARK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
@@ -19,21 +17,14 @@
                         'ark': ['Rajdhani', 'sans-serif'],
                     },
                     colors: {
-                        // Negro absoluto
                         'guardian-dark': '#0A0A0A',
-                        // Gris muy oscuro para secciones/tarjetas
                         'guardian-panel': '#1C1C1C',
-                        // Dorado brillante
                         'guardian-gold': '#FFD700',
-                        // Oro viejo/Bronce (alternativa)
                         'guardian-bronze': '#C5A059',
-                        // Crema para texto destacado
                         'guardian-cream': '#F2E8C4',
                     },
                     boxShadow: {
-                        // Sombra dorada
                         'neon-gold': '0 0 15px rgba(255, 215, 0, 0.5)',
-                        // Sombra bronce
                         'neon-bronze': '0 0 15px rgba(197, 160, 89, 0.5)',
                     }
                 }
@@ -62,29 +53,102 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .nav-link {
+            @apply group flex items-center px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wide text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/10;
+        }
+
+        .nav-link.active {
+            @apply text-white bg-white/5 border-white/10;
+        }
+
+        .nav-link-vip {
+            @apply group flex items-center px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wide text-guardian-gold hover:text-white hover:bg-guardian-gold/20 border border-guardian-gold/30 hover:border-guardian-gold transition-all duration-300 shadow-[0_0_15px_rgba(255,215,0,0.05)] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)];
+        }
     </style>
 </head>
-<body class="bg-guardian-dark text-gray-200">
+<body class="bg-guardian-dark text-gray-200 font-ark">
 
-    <nav class="fixed w-full z-50 glass-panel border-b border-yellow-900/30">
+    <div class="bg-black/95 text-gray-400 text-xs py-2 border-b border-gray-800 backdrop-blur-sm relative z-[60]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex space-x-6">
+                <span class="flex items-center hover:text-green-400 cursor-pointer transition duration-300">
+                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                    124/200 Online
+                </span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-[#5865F2] transition transform hover:-translate-y-0.5"><i class="fab fa-discord"></i></a>
+                <a href="#" class="hover:text-[#1DA1F2] transition transform hover:-translate-y-0.5"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-[#FF0000] transition transform hover:-translate-y-0.5"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sticky top-0 z-50 glass-panel border-b-2 border-guardian-gold/50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-28 md:h-32"> <!-- aumenté h-24 -> h-28 md:h-32 -->
-                <div class="flex items-center flex-shrink-0 overflow-hidden">
-                    <a href="#">
-                        <img src="./img/textoLogo.png" alt="The Guardians Logo"
-                             class="h-16 md:h-20 w-auto object-contain transform transition-transform duration-300 ease-out hover:scale-110">
+            <div class="flex items-center justify-between h-24"> 
+                
+                <div class="flex-shrink-0 flex items-center -ml-2">
+                    <a href="index.html" class="group relative block">
+                        <div class="absolute inset-0 bg-guardian-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-40 transition duration-500"></div>
+                        <img src="./img/textoLogo.png" alt="Guardians Logo" 
+                             class="relative h-16 md:h-20 w-auto object-contain transform transition duration-300 group-hover:scale-105 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
                     </a>
-
                 </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8 uppercase tracking-wider text-sm font-bold">
-                        <a href="#" class="text-guardian-cream hover:text-guardian-gold px-3 py-2 transition duration-300">Inicio</a>
-                        <a href="#categorias" class="text-guardian-cream hover:text-guardian-gold px-3 py-2 transition duration-300">Categorías</a>
-                        <a href="#destacados" class="text-guardian-cream hover:text-guardian-gold px-3 py-2 transition duration-300">Tienda</a>
-                        <a href="#" class="bg-guardian-gold text-guardian-dark px-5 py-2 rounded font-bold hover:bg-guardian-bronze transition duration-300 flex items-center">
-                            <i class="fas fa-shopping-cart mr-2"></i> Carrito
+
+                <div class="hidden md:flex items-center justify-center flex-1 ml-4">
+                    <div class="flex space-x-1 lg:space-x-3 xl:space-x-5">
+                        <a href="index.html" class="nav-link active">
+                            <i class="fas fa-home mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Inicio
+                        </a>
+
+                        <a href="ip.html" class="nav-link">
+                            <i class="fas fa-network-wired mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            IPs
+                        </a>
+                        
+                        <a href="index.html#categorias" class="nav-link">
+                            <i class="fas fa-th-large mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Categorías
+                        </a>
+
+                        <a href="ranking.html" class="nav-link">
+                            <i class="fas fa-trophy mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Ranking
+                        </a>
+
+                        <a href="index.html#destacados" class="nav-link">
+                            <i class="fas fa-info-circle mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Info
+                        </a>
+
+                        <a href="vip.html" class="nav-link-vip">
+                            <i class="fas fa-crown mr-2"></i>
+                            VIPs
                         </a>
                     </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-5">
+                    <a href="#" class="relative p-2 text-gray-400 hover:text-guardian-gold transition transform hover:scale-110">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-black bg-guardian-gold rounded-full border border-black">0</span>
+                    </a>
+
+                    <div class="relative group cursor-pointer">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-guardian-gold/0 via-guardian-gold/30 to-guardian-gold/0 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                        
+                        <button class="relative flex items-center gap-3 bg-[#151515] border border-gray-700 group-hover:border-guardian-gold/50 px-4 py-2 rounded-lg transition-all duration-300">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-guardian-gold p-2 transition">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -96,7 +160,7 @@
         <div class="relative z-10 text-center px-4 pt-20">
             
             <div class="mb-8 flex justify-center">
-                 <img src="./img/textoLogo.png" alt="The Guardians Main Logo"
+                 <img src="./img/mina.png" alt="The Guardians Main Logo"
                       class="h-70 w-auto object-contain drop-shadow-[0_0_25px_rgba(0,221,223,0.4)] transform transition-transform duration-300 ease-out hover:scale-105">
             </div>
             
@@ -131,13 +195,13 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
+                <a href="vip.html" class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
                     <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
                         <i class="fas fa-crown"></i>
                     </div>
                     <h3 class="text-2xl font-bold mb-3 text-guardian-cream group-hover:text-guardian-gold transition">Rangos VIP</h3>
                     <p class="text-gray-400">Beneficios exclusivos, kits diarios y estatus en el servidor.</p>
-                </div>
+                </a>
 
                 <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
                     <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
@@ -171,24 +235,17 @@
                     <div class="relative">
                          <img src="https://via.placeholder.com/300x200/1C1C1C/FFD700?text=Pack+Guardián" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
                         <div class="absolute top-0 right-0 bg-guardian-gold text-guardian-dark text-xs font-bold px-3 py-1 uppercase rounded-bl-lg">
-                            Oferta
                         </div>
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-2 text-guardian-cream group-hover:text-guardian-gold transition">Pack Guardián Supremo</h3>
                         <ul class="text-sm text-gray-400 mb-6 space-y-2">
-                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Rango "Guardián" (30 días)</li>
-                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> 1x Giga Max Stats</li>
-                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Kit de Construcción Tek</li>
                         </ul>
                         <div class="flex justify-between items-center">
-                            <span class="text-3xl font-bold text-guardian-cream">$25.00</span>
-                            <button class="bg-transparent border-2 border-guardian-gold text-guardian-gold hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold p-3 rounded-lg transition duration-300">
-                                <i class="fas fa-shopping-basket"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
+                
                 <div class="bg-guardian-panel rounded-xl overflow-hidden border border-yellow-900/50 hover:border-guardian-gold hover:shadow-neon-gold transition-all duration-500 group">
                     <div class="relative">
                         <img src="https://via.placeholder.com/300x200/1C1C1C/FFD700?text=Kit+PVP" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
@@ -196,14 +253,8 @@
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-2 text-guardian-cream group-hover:text-guardian-gold transition">Kit PvP Avanzado</h3>
                         <ul class="text-sm text-gray-400 mb-6 space-y-2">
-                             <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Flak Armor (Ascendant)</li>
-                            <li class="flex items-center"><i class="fas fa-check text-guardian-gold mr-2 text-xs"></i> Weapons Pack & Ammo</li>
                         </ul>
                         <div class="flex justify-between items-center">
-                            <span class="text-3xl font-bold text-guardian-cream">$10.00</span>
-                            <button class="bg-transparent border-2 border-guardian-gold text-guardian-gold hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold p-3 rounded-lg transition duration-300">
-                                <i class="fas fa-shopping-basket"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,569 @@
+<!-- filepath: c:\Users\PC\Desktop\tripa\guardians-shop\ranking.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - The Guardians</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'ark': ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        'guardian-dark': '#0A0A0A',
+                        'guardian-panel': '#1C1C1C',
+                        'guardian-gold': '#FFD700',
+                        'guardian-bronze': '#C5A059',
+                        'guardian-cream': '#F2E8C4',
+                    },
+                    boxShadow: {
+                        'neon-gold': '0 0 15px rgba(255, 215, 0, 0.5)',
+                        'neon-bronze': '0 0 15px rgba(197, 160, 89, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; }
+
+        .glass-panel {
+            background: rgba(28, 28, 28, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        .text-gradient-gold {
+            background: linear-gradient(to right, #FFD700, #F2E8C4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .rank-badge {
+            @apply inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm;
+        }
+
+        .rank-1 {
+            @apply bg-gradient-to-br from-yellow-400 to-yellow-600 text-black;
+        }
+
+        .rank-2 {
+            @apply bg-gradient-to-br from-gray-300 to-gray-500 text-black;
+        }
+
+        .rank-3 {
+            @apply bg-gradient-to-br from-orange-400 to-orange-600 text-black;
+        }
+
+        .rank-default {
+            @apply bg-guardian-panel border border-guardian-gold/30 text-guardian-gold;
+        }
+
+        .stat-bar {
+            @apply h-2 bg-guardian-panel rounded-full overflow-hidden;
+        }
+
+        .stat-fill {
+            @apply h-full bg-gradient-to-r from-guardian-gold to-guardian-bronze rounded-full transition-all duration-500;
+        }
+    </style>
+</head>
+<body class="bg-guardian-dark text-gray-200 font-ark">
+
+    <div class="bg-black/95 text-gray-400 text-xs py-2 border-b border-gray-800 backdrop-blur-sm relative z-[60]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex space-x-6">
+                <span class="flex items-center hover:text-green-400 cursor-pointer transition duration-300">
+                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                    124/200 Online
+                </span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-[#5865F2] transition transform hover:-translate-y-0.5"><i class="fab fa-discord"></i></a>
+                <a href="#" class="hover:text-[#1DA1F2] transition transform hover:-translate-y-0.5"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-[#FF0000] transition transform hover:-translate-y-0.5"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sticky top-0 z-50 glass-panel border-b-2 border-guardian-gold/50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
+                <div class="flex-shrink-0 flex items-center -ml-2">
+                    <a href="index.html" class="group relative block">
+                        <div class="absolute inset-0 bg-guardian-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-40 transition duration-500"></div>
+                        <img src="./img/textoLogo.png" alt="Guardians Logo" 
+                             class="relative h-16 md:h-20 w-auto object-contain transform transition duration-300 group-hover:scale-105 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center justify-center flex-1 ml-4">
+                    <div class="flex space-x-1 lg:space-x-3 xl:space-x-5">
+                        <a href="index.html" class="nav-link">
+                            <i class="fas fa-home mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Inicio
+                        </a>
+
+                        <a href="ip.html" class="nav-link">
+                            <i class="fas fa-network-wired mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            IPs
+                        </a>
+                        
+                        <a href="index.html#categorias" class="nav-link">
+                            <i class="fas fa-th-large mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Categorías
+                        </a>
+
+                        <a href="ranking.html" class="nav-link active">
+                            <i class="fas fa-trophy mr-2 text-guardian-gold transition-colors"></i>
+                            Ranking
+                        </a>
+
+                        <a href="index.html#destacados" class="nav-link">
+                            <i class="fas fa-info-circle mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
+                            Info
+                        </a>
+
+                        <a href="vip.html" class="nav-link-vip">
+                            <i class="fas fa-crown mr-2"></i>
+                            VIPs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="relative h-96 flex items-center justify-center overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
+        
+        <div class="relative z-10 text-center px-4">
+            <h1 class="text-5xl font-bold uppercase tracking-wider text-guardian-cream mb-4">
+                Ranking de <span class="text-guardian-gold">Tribus</span>
+            </h1>
+            <p class="text-xl text-gray-300">Compite por los primeros lugares y demuestra tu dominio en ARK</p>
+        </div>
+    </div>
+
+    <section class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="mb-12 flex justify-center gap-4 flex-wrap">
+                <button class="wipe-btn active px-6 py-3 rounded-lg font-bold uppercase tracking-wider bg-guardian-gold text-guardian-dark hover:shadow-neon-gold transition duration-300" data-wipe="wipe-1">
+                    <i class="fas fa-star mr-2"></i> Wipe Actual
+                </button>
+                <button class="wipe-btn px-6 py-3 rounded-lg font-bold uppercase tracking-wider border-2 border-guardian-gold text-guardian-gold hover:bg-guardian-gold hover:text-guardian-dark transition duration-300" data-wipe="wipe-2">
+                    <i class="fas fa-calendar mr-2"></i> Wipe Anterior
+                </button>
+                <button class="wipe-btn px-6 py-3 rounded-lg font-bold uppercase tracking-wider border-2 border-guardian-gold text-guardian-gold hover:bg-guardian-gold hover:text-guardian-dark transition duration-300" data-wipe="wipe-3">
+                    <i class="fas fa-history mr-2"></i> Wipe S1
+                </button>
+                <button class="wipe-btn px-6 py-3 rounded-lg font-bold uppercase tracking-wider border-2 border-guardian-gold text-guardian-gold hover:bg-guardian-gold hover:text-guardian-dark transition duration-300" data-wipe="wipe-4">
+                    <i class="fas fa-history mr-2"></i> Wipe S0
+                </button>
+            </div>
+
+            <div id="wipe-1" class="wipe-content">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-guardian-cream mb-2">
+                        <span class="text-guardian-gold">Wipe Actual</span> - Temporada 4
+                    </h2>
+                    <p class="text-gray-400">Época del 15 de Enero - En Curso</p>
+                </div>
+
+                <div class="overflow-x-auto glass-panel rounded-xl">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-guardian-gold/20">
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">Tribu</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Puntos</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Kills</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Muertes</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">K/D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-1">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-guardian-gold to-guardian-bronze"></div>
+                                        <span class="font-bold text-guardian-cream">HANNAPUNZEL</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">450,280</td>
+                                <td class="px-6 py-4 text-center text-gray-300">324</td>
+                                <td class="px-6 py-4 text-center text-gray-400">82</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.95</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-2">2</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500"></div>
+                                        <span class="font-bold text-guardian-cream">ZOOM MOLESTADOR</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">42,150</td>
+                                <td class="px-6 py-4 text-center text-gray-300">298</td>
+                                <td class="px-6 py-4 text-center text-gray-400">91</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.27</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-3">3</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600"></div>
+                                        <span class="font-bold text-guardian-cream">ONLY FANS</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">38,920</td>
+                                <td class="px-6 py-4 text-center text-gray-300">267</td>
+                                <td class="px-6 py-4 text-center text-gray-400">78</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.42</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-default">4</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-guardian-panel border border-guardian-gold/50"></div>
+                                        <span class="font-bold text-guardian-cream">LOS NENITOS</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">35,670</td>
+                                <td class="px-6 py-4 text-center text-gray-300">241</td>
+                                <td class="px-6 py-4 text-center text-gray-400">95</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-yellow-400 font-bold">2.54</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-default">5</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-guardian-panel border border-guardian-gold/50"></div>
+                                        <span class="font-bold text-guardian-cream">LA MECA DE LA IRRELEVANCIA</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">32,140</td>
+                                <td class="px-6 py-4 text-center text-gray-300">218</td>
+                                <td class="px-6 py-4 text-center text-gray-400">103</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-yellow-400 font-bold">2.12</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-default">6</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-guardian-panel border border-guardian-gold/50"></div>
+                                        <span class="font-bold text-guardian-cream">Storm Breakers</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">28,850</td>
+                                <td class="px-6 py-4 text-center text-gray-300">195</td>
+                                <td class="px-6 py-4 text-center text-gray-400">112</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-orange-400 font-bold">1.74</span>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-default">7</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-guardian-panel border border-guardian-gold/50"></div>
+                                        <span class="font-bold text-guardian-cream">Infernal Squad</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">24,320</td>
+                                <td class="px-6 py-4 text-center text-gray-300">162</td>
+                                <td class="px-6 py-4 text-center text-gray-400">128</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-orange-400 font-bold">1.27</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="wipe-2" class="wipe-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-guardian-cream mb-2">
+                        <span class="text-guardian-gold">Wipe Anterior</span> - Temporada 3
+                    </h2>
+                    <p class="text-gray-400">Época del 10 de Diciembre - 14 de Enero</p>
+                </div>
+
+                <div class="overflow-x-auto glass-panel rounded-xl">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-guardian-gold/20">
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">Tribu</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Puntos</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Kills</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Muertes</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">K/D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-1">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-guardian-gold to-guardian-bronze"></div>
+                                        <span class="font-bold text-guardian-cream">Shadow Legion</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">41,200</td>
+                                <td class="px-6 py-4 text-center text-gray-300">289</td>
+                                <td class="px-6 py-4 text-center text-gray-400">75</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.85</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-2">2</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500"></div>
+                                        <span class="font-bold text-guardian-cream">Titan Hunters</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">38,560</td>
+                                <td class="px-6 py-4 text-center text-gray-300">256</td>
+                                <td class="px-6 py-4 text-center text-gray-400">88</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">2.91</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-3">3</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600"></div>
+                                        <span class="font-bold text-guardian-cream">Alpha Dominion</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">35,890</td>
+                                <td class="px-6 py-4 text-center text-gray-300">234</td>
+                                <td class="px-6 py-4 text-center text-gray-400">102</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-yellow-400 font-bold">2.29</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-default">4</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-guardian-panel border border-guardian-gold/50"></div>
+                                        <span class="font-bold text-guardian-cream">Void Collective</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">31,450</td>
+                                <td class="px-6 py-4 text-center text-gray-300">201</td>
+                                <td class="px-6 py-4 text-center text-gray-400">118</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-orange-400 font-bold">1.70</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="wipe-3" class="wipe-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-guardian-cream mb-2">
+                        <span class="text-guardian-gold">Wipe S1</span> - Temporada 2
+                    </h2>
+                    <p class="text-gray-400">Época del 5 de Noviembre - 9 de Diciembre</p>
+                </div>
+
+                <div class="overflow-x-auto glass-panel rounded-xl">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-guardian-gold/20">
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">Tribu</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Puntos</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Kills</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Muertes</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">K/D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-1">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-guardian-gold to-guardian-bronze"></div>
+                                        <span class="font-bold text-guardian-cream">Phoenix Rising</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">39,120</td>
+                                <td class="px-6 py-4 text-center text-gray-300">267</td>
+                                <td class="px-6 py-4 text-center text-gray-400">70</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.81</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="wipe-4" class="wipe-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-guardian-cream mb-2">
+                        <span class="text-guardian-gold">Wipe S0</span> - Temporada 1
+                    </h2>
+                    <p class="text-gray-400">Época del 1 de Octubre - 4 de Noviembre</p>
+                </div>
+
+                <div class="overflow-x-auto glass-panel rounded-xl">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-guardian-gold/20">
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-left text-guardian-gold font-bold uppercase tracking-wider">Tribu</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Puntos</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Kills</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">Muertes</th>
+                                <th class="px-6 py-4 text-center text-guardian-gold font-bold uppercase tracking-wider">K/D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-guardian-gold/10 hover:bg-guardian-gold/5 transition">
+                                <td class="px-6 py-4">
+                                    <span class="rank-badge rank-1">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-guardian-gold to-guardian-bronze"></div>
+                                        <span class="font-bold text-guardian-cream">Infernal Squad</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-guardian-gold">36,780</td>
+                                <td class="px-6 py-4 text-center text-gray-300">245</td>
+                                <td class="px-6 py-4 text-center text-gray-400">65</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-green-400 font-bold">3.77</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-black py-12 border-t border-yellow-900/50">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center">
+            <div class="mb-8 sm:mb-0 text-left">
+                 <h2 class="text-2xl font-bold text-guardian-gold tracking-widest uppercase mb-2">The Guardians</h2>
+                <p class="text-gray-500 text-sm">Dominando el ARK desde 2023.</p>
+            </div>
+            <div>
+                 <div class="flex justify-center sm:justify-end space-x-6 mb-4">
+                    <a href="#" class="text-gray-500 hover:text-guardian-gold transition transform hover:-translate-y-1"><i class="fab fa-discord text-3xl"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-guardian-gold transition transform hover:-translate-y-1"><i class="fab fa-twitter text-3xl"></i></a>
+                </div>
+                <p class="text-gray-600 text-sm">
+                    &copy; 2023 The Guardians. No afiliado con Studio Wildcard.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.wipe-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.wipe-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-guardian-gold', 'text-guardian-dark');
+                    b.classList.add('border-2', 'border-guardian-gold', 'text-guardian-gold');
+                });
+                
+                document.querySelectorAll('.wipe-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                this.classList.add('active', 'bg-guardian-gold', 'text-guardian-dark');
+                this.classList.remove('border-2', 'border-guardian-gold', 'text-guardian-gold');
+                
+                const wipeId = this.getAttribute('data-wipe');
+                document.getElementById(wipeId).classList.remove('hidden');
+            });
+        });
+    </script>
+
+</body>
+</html>
