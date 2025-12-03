@@ -87,100 +87,14 @@
             50% { opacity: 0.5; }
         }
     </style>
+      <link rel="stylesheet" href="navbar-styles.css">
+    <script src="load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
-    <div class="bg-black/95 text-gray-400 text-xs py-2 border-b border-gray-800 backdrop-blur-sm relative z-[60]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div class="flex space-x-6">
-                <span class="flex items-center hover:text-green-400 cursor-pointer transition duration-300">
-                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
-                    124/200 Online
-                </span>
-            </div>
-            <div class="flex space-x-4">
-                <a href="#" class="hover:text-[#5865F2] transition transform hover:-translate-y-0.5"><i class="fab fa-discord"></i></a>
-                <a href="#" class="hover:text-[#1DA1F2] transition transform hover:-translate-y-0.5"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-[#FF0000] transition transform hover:-translate-y-0.5"><i class="fab fa-youtube"></i></a>
-            </div>
-        </div>
-    </div>
+   
 
-    <nav class="sticky top-0 z-50 glass-panel border-b-2 border-guardian-gold/50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-24">
-                <div class="flex-shrink-0 flex items-center -ml-2">
-                    <a href="index.html" class="group relative block">
-                        <div class="absolute inset-0 bg-guardian-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-40 transition duration-500"></div>
-                        <img src="./img/textoLogo.png" alt="Guardians Logo" 
-                             class="relative h-16 md:h-20 w-auto object-contain transform transition duration-300 group-hover:scale-105 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-                    </a>
-                </div>
-
-                <div class="hidden md:flex items-center justify-center flex-1 ml-4">
-                    <div class="flex space-x-1 lg:space-x-3 xl:space-x-5">
-                        <a href="index.html" class="nav-link">
-                            <i class="fas fa-home mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
-                            Inicio
-                        </a>
-
-                        <a href="ip.html" class="nav-link active">
-                            <i class="fas fa-network-wired mr-2 text-guardian-gold transition-colors"></i>
-                            IPs
-                        </a>
-                        
-                        <a href="index.html#categorias" class="nav-link">
-                            <i class="fas fa-th-large mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
-                            Categorías
-                        </a>
-
-                        <a href="ranking.html" class="nav-link">
-                            <i class="fas fa-trophy mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
-                            Ranking
-                        </a>
-
-                        <a href="index.html#destacados" class="nav-link">
-                            <i class="fas fa-info-circle mr-2 text-guardian-bronze group-hover:text-guardian-gold transition-colors"></i>
-                            Info
-                        </a>
-
-                        <a href="vip.html" class="nav-link-vip">
-                            <i class="fas fa-crown mr-2"></i>
-                            VIPs
-                        </a>
-                    </div>
-                </div>
-
-                <div class="hidden md:flex items-center gap-5">
-                    <a href="#" class="relative p-2 text-gray-400 hover:text-guardian-gold transition transform hover:scale-110">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-black bg-guardian-gold rounded-full border border-black">0</span>
-                    </a>
-
-                    <div class="relative group cursor-pointer">
-                        <div class="absolute -inset-0.5 bg-gradient-to-r from-guardian-gold/0 via-guardian-gold/30 to-guardian-gold/0 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                        
-                        <button class="relative flex items-center gap-3 bg-[#151515] border border-gray-700 group-hover:border-guardian-gold/50 px-4 py-2 rounded-lg transition-all duration-300">
-                            <div class="h-9 w-9 rounded bg-[#0a0a0a] border border-gray-700 flex items-center justify-center text-guardian-gold shadow-inner">
-                                <i class="fab fa-steam text-xl"></i>
-                            </div>
-                            <div class="text-left flex flex-col justify-center h-full">
-                                <p class="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Jugador</p>
-                                <p class="text-sm font-bold text-gray-200 group-hover:text-guardian-gold transition leading-tight">ACCEDER</p>
-                            </div>
-                            <i class="fas fa-chevron-right ml-1 text-xs text-gray-600 group-hover:text-guardian-gold group-hover:translate-x-1 transition duration-300"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex md:hidden">
-                    <button type="button" class="text-gray-300 hover:text-guardian-gold p-2 transition">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+  
 
     <section class="py-24 relative overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>

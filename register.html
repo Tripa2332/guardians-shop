@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - The Guardians</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'ark': ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        'guardian-dark': '#0A0A0A',
+                        'guardian-panel': '#1C1C1C',
+                        'guardian-gold': '#FFD700',
+                        'guardian-bronze': '#C5A059',
+                        'guardian-cream': '#F2E8C4',
+                    },
+                    boxShadow: {
+                        'neon-gold': '0 0 15px rgba(255, 215, 0, 0.5)',
+                        'neon-bronze': '0 0 15px rgba(197, 160, 89, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; }
+
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .input-field {
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            color: #F2E8C4;
+            padding: 12px 16px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .input-field::placeholder {
+            color: #666;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #FFD700;
+            background: rgba(10, 10, 10, 0.9);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700, #C5A059);
+            color: #0A0A0A;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .text-gradient-gold {
+            background: linear-gradient(to right, #FFD700, #F2E8C4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .divider-line {
+            background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.3), transparent);
+        }
+
+        .label-text {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #F2E8C4;
+        }
+
+        .checkbox-custom {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 4px;
+            background: rgba(10, 10, 10, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox-custom:checked {
+            background: #FFD700;
+            border-color: #FFD700;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+    <link rel="stylesheet" href="navbar-styles.css">
+    <script src="load-navbar.js"></script>
+</head>
+<body class="bg-guardian-dark text-gray-200 font-ark">
+
+    <div class="relative min-h-screen flex items-center justify-center overflow-hidden py-12" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="absolute inset-0 z-0 bg-gradient-to-b from-guardian-dark/95 to-guardian-dark/98"></div>
+        <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-guardian-gold opacity-5 blur-[180px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-20 right-10 w-80 h-80 bg-guardian-bronze opacity-3 blur-[160px] rounded-full pointer-events-none"></div>
+
+        <div class="relative z-10 w-full max-w-md px-6 sm:px-4">
+            <div class="glass-panel p-10 rounded-2xl">
+                
+                <!-- Header -->
+                <div class="text-center mb-10">
+                    <div class="mb-6 flex justify-center">
+                        <img src="./img/mina.png" alt="The Guardians Logo" class="h-28 w-auto object-contain drop-shadow-[0_0_25px_rgba(255,215,0,0.4)] transform transition-transform duration-300 hover:scale-110">
+                    </div>
+                    <h1 class="text-4xl font-bold uppercase tracking-[0.15em] text-gradient-gold mb-3">The Guardians</h1>
+                    <p class="text-gray-400 text-sm tracking-wide">Únete a nuestra comunidad</p>
+                </div>
+
+                <!-- Form -->
+                <form class="space-y-5 mb-8">
+                    <!-- Username Field -->
+                    <div>
+                        <label class="label-text block mb-3">👤 Nombre de Usuario</label>
+                        <input type="text" placeholder="Tu nombre" class="input-field" required>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div>
+                        <label class="label-text block mb-3">📧 Email</label>
+                        <input type="email" placeholder="tu@email.com" class="input-field" required>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label class="label-text block mb-3">🔐 Contraseña</label>
+                        <input type="password" placeholder="••••••••" class="input-field" required>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div>
+                        <label class="label-text block mb-3">🔐 Confirmar Contraseña</label>
+                        <input type="password" placeholder="••••••••" class="input-field" required>
+                    </div>
+
+                    <!-- Terms Checkbox -->
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" class="checkbox-custom" required>
+                        <span class="ml-3 text-gray-400 text-sm group-hover:text-guardian-gold transition">
+                            Acepto los <a href="#" class="text-guardian-gold font-bold hover:underline">Términos de Servicio</a>
+                        </span>
+                    </label>
+
+                    <!-- Register Button -->
+                    <button type="submit" class="btn-login btn-primary mt-8">
+                        <i class="fas fa-user-plus mr-3"></i> Crear Cuenta
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="relative mb-8">
+                    <div class="divider-line h-px w-full"></div>
+                    <div class="absolute left-1/2 -translate-x-1/2 -top-3 px-3 bg-guardian-panel text-gray-400 text-xs uppercase tracking-wider font-bold">O regístrate con</div>
+                </div>
+
+                <!-- OAuth Buttons -->
+                <div class="space-y-3 mb-8">
+                    <button type="button" class="btn-login btn-secondary">
+                        <i class="fab fa-steam mr-3 text-lg"></i> Steam
+                    </button>
+                    <button type="button" class="btn-login btn-secondary">
+                        <i class="fab fa-discord mr-3 text-lg"></i> Discord
+                    </button>
+                </div>
+
+                <!-- Login Link -->
+                <div class="text-center pb-8 border-b border-guardian-gold/20">
+                    <p class="text-gray-400 text-sm">
+                        ¿Ya tienes cuenta? 
+                        <a href="login.html" class="text-guardian-gold hover:text-guardian-cream transition font-bold ml-1">Inicia sesión aquí</a>
+                    </p>
+                </div>
+
+                <!-- Back Button -->
+                <div class="mt-8 pt-6">
+                    <a href="index.html" class="flex items-center justify-center text-guardian-gold hover:text-guardian-cream transition text-sm font-bold uppercase tracking-[0.1em] group">
+                        <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <p class="text-center text-gray-600 text-xs mt-8 tracking-wide">
+                Al registrarte, aceptas nuestros <span class="text-guardian-gold">Términos de Servicio</span>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
