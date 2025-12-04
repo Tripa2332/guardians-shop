@@ -1,3 +1,4 @@
+require('dotenv').config(); // Cargar variables de entorno al inicio
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -5,7 +6,26 @@ const SteamStrategy = require('passport-steam').Strategy;
 const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
 
+// IMPORTACIONES NUEVAS (Mercado Pago y RCON)
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
+const { Rcon } = require('rcon-client');
+
 const app = express();
+
+// --- CONFIGURACIÓN MERCADO PAGO ---
+const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+
+// --- CONFIGURACIÓN RCON (Minecraft / Ark) ---
+const rconConfig = {
+    host: process.env.RCON_HOST || '127.0.0.1',
+    port: parseInt(process.env.RCON_PORT) || 25575,
+    password: process.env.RCON_PASSWORD || 'tu_password'
+};
+
+// --- MIDDLEWARE ---
+// IMPORTANTE: Necesario para leer el JSON que envía Mercado Pago y tu Frontend
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 
 // --- 1. Configuración de Sesión ---
 app.use(session({
@@ -53,7 +73,101 @@ passport.use(new DiscordStrategy({
 // --- 4. Archivos Estáticos ---
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- 5. RUTAS DE AUTENTICACIÓN ---
+// ==========================================
+// NUEVAS RUTAS DE MERCADO PAGO Y RCON
+// ==========================================
+
+// RUTA A: CREAR LA PREFERENCIA DE PAGO
+app.post('/crear-orden', async (req, res) => {
+    try {
+        // Obtenemos los datos desde el frontend
+        const { title, price, quantity, username } = req.body;
+
+        const preference = new Preference(client);
+        const result = await preference.create({
+            body: {
+                items: [
+                    {
+                        title: title,
+                        unit_price: Number(price),
+                        quantity: Number(quantity),
+                        currency_id: 'ARS', // Cambiar si usas otra moneda
+                    }
+                ],
+                // Guardamos el usuario y el ID del item en metadata para usarlos luego
+                metadata: {
+                    player_username: username,
+                    item_id: 'diamond_sword' // Aquí deberías pasar el ID real del item de Ark/Minecraft
+                },
+                back_urls: {
+                    success: "http://localhost:3000/exito", // Puedes crear una pagina success.html
+                    failure: "http://localhost:3000/fallo",
+                },
+                // IMPORTANTE: Aquí va tu URL de Ngrok o Dominio real para que MP te avise
+                notification_url: "https://TU-URL-NGROK.ngrok-free.app/webhook" 
+            }
+        });
+
+        res.json({ id: result.id, init_point: result.init_point });
+    } catch (error) {
+        console.error("Error al crear preferencia:", error);
+        res.status(500).send("Error al crear la preferencia");
+    }
+});
+
+// RUTA B: WEBHOOK (Recepción del pago)
+app.post('/webhook', async (req, res) => {
+    const { query } = req;
+    const topic = query.topic || query.type;
+
+    if (topic === 'payment') {
+        const paymentId = query.id || query['data.id'];
+        
+        try {
+            const payment = new Payment(client);
+            const paymentData = await payment.get({ id: paymentId });
+            
+            if (paymentData.status === 'approved') {
+                const player = paymentData.metadata.player_username;
+                const item = paymentData.metadata.item_id; // Ej: 'diamond_sword' o Blueprint de Ark
+
+                console.log(`✅ Pago aprobado de ${player}. Entregando ${item}...`);
+                
+                // Llamamos a la función RCON
+                await entregarItemEnJuego(player, item);
+            }
+        } catch (error) {
+            console.error("Error en Webhook:", error);
+        }
+    }
+    
+    res.sendStatus(200);
+});
+
+// FUNCIÓN AUXILIAR RCON
+async function entregarItemEnJuego(player, item) {
+    try {
+        const rcon = await Rcon.connect(rconConfig);
+        
+        // COMANDO: Ajusta esto según sea Minecraft o Ark
+        // Minecraft: /give Jugador item cantidad
+        const command = `give ${player} ${item} 1`; 
+        
+        const response = await rcon.send(command);
+        console.log("🎮 Respuesta del Servidor:", response);
+        
+        await rcon.end();
+    } catch (error) {
+        console.error("❌ Error conectando RCON:", error);
+    }
+}
+
+// ==========================================
+// FIN RUTAS NUEVAS
+// ==========================================
+
+
+// --- 5. RUTAS DE AUTENTICACIÓN (Tus rutas originales) ---
 
 // Ruta para iniciar sesión con Steam
 app.get('/auth/steam',
@@ -84,7 +198,7 @@ app.get('/auth/discord/return',
   }
 );
 
-// Nueva ruta para guardar datos en una página y redirigir (Steam)
+// Ruta Success Steam
 app.get('/auth/steam/success', (req, res) => {
     if (req.user) {
         res.send(`
@@ -104,9 +218,7 @@ app.get('/auth/steam/success', (req, res) => {
                     window.location.href = '/index.html';
                 </script>
             </head>
-            <body>
-                <p>Redirigiendo...</p>
-            </body>
+            <body><p>Redirigiendo...</p></body>
             </html>
         `);
     } else {
@@ -114,7 +226,7 @@ app.get('/auth/steam/success', (req, res) => {
     }
 });
 
-// Nueva ruta para guardar datos en una página y redirigir (Discord)
+// Ruta Success Discord
 app.get('/auth/discord/success', (req, res) => {
     if (req.user) {
         const avatarUrl = req.user.avatar 
@@ -137,9 +249,7 @@ app.get('/auth/discord/success', (req, res) => {
                     window.location.href = '/index.html';
                 </script>
             </head>
-            <body>
-                <p>Redirigiendo...</p>
-            </body>
+            <body><p>Redirigiendo...</p></body>
             </html>
         `);
     } else {
@@ -155,15 +265,12 @@ app.get('/logout', (req, res, next) => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Cerrando sesión</title>
                 <script>
                     localStorage.removeItem('currentUser');
                     window.location.href = '/index.html';
                 </script>
             </head>
-            <body>
-                <p>Cerrando sesión...</p>
-            </body>
+            <body><p>Cerrando sesión...</p></body>
             </html>
         `);
     });
@@ -186,6 +293,11 @@ app.get('/api/user', (req, res) => {
     } else {
         res.json(null);
     }
+});
+
+// --- NUEVA RUTA: API PARA OBTENER CLAVE PÚBLICA DE MP ---
+app.get('/api/mp-public-key', (req, res) => {
+    res.json({ publicKey: process.env.MP_PUBLIC_KEY });
 });
 
 // --- 8. Iniciar Servidor ---

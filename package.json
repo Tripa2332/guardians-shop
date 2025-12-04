@@ -1,11 +1,14 @@
 {
   "dependencies": {
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
+    "mercadopago": "^2.11.0",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
-    "passport-steam": "^1.0.18"
+    "passport-steam": "^1.0.18",
+    "rcon-client": "^4.2.5"
   },
   "name": "guardians-shop",
   "version": "1.0.0",

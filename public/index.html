@@ -79,7 +79,7 @@
     <a href="#destacados" class="bg-guardian-gold text-guardian-dark py-4 px-10 rounded hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300 flex items-center justify-center gap-3">
         <i class="fab fa-steam text-xl"></i> Modpack
     </a>
-    <a href="#" class="border-2 border-guardian-gold text-guardian-cream py-4 px-10 rounded hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold transition duration-300 flex items-center justify-center">
+    <a href="https://discord.gg/2rUgsMMT7G" class="border-2 border-guardian-gold text-guardian-cream py-4 px-10 rounded hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold transition duration-300 flex items-center justify-center">
         <i class="fab fa-discord mr-3 text-xl"></i> Unirse a Discord
     </a>
 </div>
@@ -185,5 +185,46 @@
         </div>
     </footer>
 
+<script>
+    // Verificar si el usuario está logueado al cargar la página
+    function checkUserLogin() {
+        const user = localStorage.getItem('currentUser');
+        
+        if (user) {
+            const userData = JSON.parse(user);
+            showUserProfile(userData);
+        }
+    }
+
+    function showUserProfile(userData) {
+        document.getElementById('btnAcceder').classList.add('hidden');
+        document.getElementById('userProfile').classList.remove('hidden');
+        document.getElementById('userName').textContent = userData.name || 'Usuario';
+        document.getElementById('userAvatar').src = userData.avatar || 'https://via.placeholder.com/40/FFD700/1C1C1C?text=' + userData.name.charAt(0);
+    }
+
+    function logout() {
+        localStorage.removeItem('currentUser');
+        location.reload();
+    }
+
+    // Evento para logout al hacer click en el perfil
+    document.getElementById('userProfile')?.addEventListener('click', () => {
+        if (confirm('¿Deseas cerrar sesión?')) {
+            logout();
+        }
+    });
+
+    // Ejecutar al cargar
+    checkUserLogin();
+
+    // Simulación de datos de usuario para pruebas
+const userData = {
+    name: 'NombreUsuario',
+    avatar: 'url-del-avatar.jpg' // O déjalo en blanco para que use un avatar por defecto
+};
+localStorage.setItem('currentUser', JSON.stringify(userData));
+location.reload();
+</script>
 </body>
 </html>
