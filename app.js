@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const SteamStrategy = require('passport-steam').Strategy;
+const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
 
 const app = express();
@@ -37,12 +38,24 @@ passport.use(new SteamStrategy({
   }
 ));
 
+// --- 3b. Estrategia de Discord ---
+passport.use(new DiscordStrategy({
+    clientID: '1445970263647850551',
+    clientSecret: 'ufa0qW2nS5Bx7P9nW3NbEG-3y9IyLBPM',
+    callbackURL: 'http://localhost:3000/auth/discord/return',
+    scope: ['identify', 'email']
+  },
+  (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+  }
+));
+
 // --- 4. Archivos Estáticos ---
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- 5. RUTAS DE AUTENTICACIÓN ---
 
-// Ruta para iniciar sesión (Redirige a Steam)
+// Ruta para iniciar sesión con Steam
 app.get('/auth/steam',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
@@ -50,7 +63,7 @@ app.get('/auth/steam',
   }
 );
 
-// Ruta de retorno (A donde Steam devuelve al usuario)
+// Ruta de retorno de Steam
 app.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
@@ -58,10 +71,22 @@ app.get('/auth/steam/return',
   }
 );
 
-// Nueva ruta para guardar datos en una página y redirigir
+// Ruta para iniciar sesión con Discord
+app.get('/auth/discord',
+  passport.authenticate('discord')
+);
+
+// Ruta de retorno de Discord
+app.get('/auth/discord/return',
+  passport.authenticate('discord', { failureRedirect: '/' }),
+  (req, res) => {
+    res.redirect('/auth/discord/success');
+  }
+);
+
+// Nueva ruta para guardar datos en una página y redirigir (Steam)
 app.get('/auth/steam/success', (req, res) => {
     if (req.user) {
-        // Renderizar una página que guarde los datos en localStorage
         res.send(`
             <!DOCTYPE html>
             <html>
@@ -72,7 +97,41 @@ app.get('/auth/steam/success', (req, res) => {
                         name: '${req.user.displayName || 'Usuario'}',
                         avatar: '${req.user.photos && req.user.photos[0] ? req.user.photos[0].value : 'https://via.placeholder.com/40/FFD700/1C1C1C?text=U'}',
                         steamId: '${req.user.id}',
-                        profileUrl: '${req.user.profileUrl}'
+                        profileUrl: '${req.user.profileUrl}',
+                        provider: 'steam'
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    window.location.href = '/index.html';
+                </script>
+            </head>
+            <body>
+                <p>Redirigiendo...</p>
+            </body>
+            </html>
+        `);
+    } else {
+        res.redirect('/');
+    }
+});
+
+// Nueva ruta para guardar datos en una página y redirigir (Discord)
+app.get('/auth/discord/success', (req, res) => {
+    if (req.user) {
+        const avatarUrl = req.user.avatar 
+            ? `https://cdn.discordapp.com/avatars/${req.user.id}/${req.user.avatar}.png`
+            : 'https://via.placeholder.com/40/5865F2/FFFFFF?text=D';
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Autenticación completada</title>
+                <script>
+                    const userData = {
+                        name: '${req.user.username || 'Usuario'}',
+                        avatar: '${avatarUrl}',
+                        discordId: '${req.user.id}',
+                        email: '${req.user.email || ''}',
+                        provider: 'discord'
                     };
                     localStorage.setItem('currentUser', JSON.stringify(userData));
                     window.location.href = '/index.html';
@@ -119,10 +178,10 @@ app.get('/', (req, res) => {
 app.get('/api/user', (req, res) => {
     if (req.user) {
         res.json({
-            name: req.user.displayName,
+            name: req.user.displayName || req.user.username,
             avatar: req.user.photos && req.user.photos[0] ? req.user.photos[0].value : null,
-            steamId: req.user.id,
-            profileUrl: req.user.profileUrl
+            id: req.user.id,
+            provider: req.user.provider
         });
     } else {
         res.json(null);
