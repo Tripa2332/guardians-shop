@@ -61,7 +61,9 @@
                     <i class="fas fa-shopping-cart text-xl"></i>
                     <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-black bg-guardian-gold rounded-full border border-black">0</span>
                 </a>
-                <a href="login.html" class="relative group cursor-pointer">
+
+                <!-- Botón Acceder (Sin Login) -->
+                <a id="btnAcceder" href="login.html" class="relative group cursor-pointer">
                     <div class="absolute -inset-0.5 bg-gradient-to-r from-guardian-gold/0 via-guardian-gold/30 to-guardian-gold/0 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
                     <div class="relative flex items-center gap-3 bg-[#151515] border border-gray-700 group-hover:border-guardian-gold/50 px-4 py-2 rounded-lg transition-all duration-300">
                         <div class="h-9 w-9 rounded bg-[#0a0a0a] border border-gray-700 flex items-center justify-center text-guardian-gold shadow-inner">
@@ -74,6 +76,46 @@
                         <i class="fas fa-chevron-right ml-1 text-xs text-gray-600 group-hover:text-guardian-gold group-hover:translate-x-1 transition duration-300"></i>
                     </div>
                 </a>
+
+                <!-- Avatar Usuario (Con Login) -->
+                <div id="userProfile" class="hidden relative group cursor-pointer">
+                    <div class="flex items-center gap-3 bg-[#151515] border border-guardian-gold/30 group-hover:border-guardian-gold px-3 py-2 rounded-lg transition-all duration-300 hover:bg-guardian-gold/10">
+                        <img id="userAvatar" src="" alt="Avatar" class="h-9 w-9 rounded-full border border-guardian-gold/50 object-cover">
+                        <div class="text-left flex flex-col justify-center h-full">
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Bienvenido</p>
+                            <p id="userName" class="text-sm font-bold text-guardian-cream leading-tight truncate max-w-[80px]">Usuario</p>
+                        </div>
+                        <i class="fas fa-chevron-down ml-1 text-xs text-guardian-gold group-hover:rotate-180 transition duration-300"></i>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-guardian-panel border border-guardian-gold/30 rounded-lg shadow-lg z-50">
+                        <div class="p-3 border-b border-guardian-gold/20">
+                            <p class="text-xs text-gray-400 uppercase tracking-widest">Mi Cuenta</p>
+                        </div>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-guardian-gold/10 hover:text-guardian-gold transition">
+                            <i class="fas fa-user text-guardian-gold"></i>
+                            <span class="text-sm font-bold">Mi Perfil</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-guardian-gold/10 hover:text-guardian-gold transition">
+                            <i class="fas fa-cog text-guardian-gold"></i>
+                            <span class="text-sm font-bold">Configuración</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-guardian-gold/10 hover:text-guardian-gold transition">
+                            <i class="fas fa-heart text-guardian-gold"></i>
+                            <span class="text-sm font-bold">Favoritos</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-guardian-gold/10 hover:text-guardian-gold transition">
+                            <i class="fas fa-history text-guardian-gold"></i>
+                            <span class="text-sm font-bold">Historial</span>
+                        </a>
+                        <div class="border-t border-guardian-gold/20"></div>
+                        <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="text-sm font-bold">Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="flex md:hidden">

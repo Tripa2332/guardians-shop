@@ -8,7 +8,7 @@ const app = express();
 
 // --- 1. Configuración de Sesión ---
 app.use(session({
-    secret: 'un_secreto_seguro', // Cambia esto por algo más complejo en producción
+    secret: 'un_secreto_seguro',
     resave: false,
     saveUninitialized: true
 }));
@@ -17,7 +17,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serialización (Para guardar el usuario en la sesión)
+// Serialización
 passport.serializeUser((user, done) => {
     done(null, user);
 });
@@ -30,18 +30,15 @@ passport.deserializeUser((obj, done) => {
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:3000/auth/steam/return',
     realm: 'http://localhost:3000/',
-    apiKey: 'C661EA61498725A379CA1F8043804908' // ⚠️ RECUERDA: Protege esto con variables de entorno (.env)
+    apiKey: 'C661EA61498725A379CA1F8043804908'
   },
   (identifier, profile, done) => {
-    // Aquí podrías guardar el usuario en tu base de datos si quisieras
     return done(null, profile);
   }
 ));
 
 // --- 4. Archivos Estáticos ---
-// Esto permite que el navegador encuentre tu index.html, css, js en la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // --- 5. RUTAS DE AUTENTICACIÓN ---
 
@@ -57,36 +54,80 @@ app.get('/auth/steam',
 app.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
-    // Autenticación exitosa, redirigir al home
-    res.redirect('/');
+    res.redirect('/auth/steam/success');
   }
 );
+
+// Nueva ruta para guardar datos en una página y redirigir
+app.get('/auth/steam/success', (req, res) => {
+    if (req.user) {
+        // Renderizar una página que guarde los datos en localStorage
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Autenticación completada</title>
+                <script>
+                    const userData = {
+                        name: '${req.user.displayName || 'Usuario'}',
+                        avatar: '${req.user.photos && req.user.photos[0] ? req.user.photos[0].value : 'https://via.placeholder.com/40/FFD700/1C1C1C?text=U'}',
+                        steamId: '${req.user.id}',
+                        profileUrl: '${req.user.profileUrl}'
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    window.location.href = '/index.html';
+                </script>
+            </head>
+            <body>
+                <p>Redirigiendo...</p>
+            </body>
+            </html>
+        `);
+    } else {
+        res.redirect('/');
+    }
+});
 
 // Ruta de Logout
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
-        res.redirect('/');
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Cerrando sesión</title>
+                <script>
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/index.html';
+                </script>
+            </head>
+            <body>
+                <p>Cerrando sesión...</p>
+            </body>
+            </html>
+        `);
     });
 });
 
-
-// --- 6. RUTA PRINCIPAL (La que fallaba) ---
-// Al ser un HTML estático en 'public', usamos sendFile.
+// --- 6. RUTA PRINCIPAL ---
 app.get('/', (req, res) => {
-    // Si tienes el archivo en la carpeta 'public', express.static ya debería servirlo.
-    // Pero forzamos la ruta aquí por seguridad:
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
-// --- 7. API EXTRA (Opcional) ---
-// Como index.html es estático, no puede leer variables de servidor.
-// Si necesitas mostrar el nombre del usuario en tu HTML, haz un fetch a esta ruta:
+// --- 7. API PARA OBTENER USUARIO ---
 app.get('/api/user', (req, res) => {
-    res.json(req.user || null);
+    if (req.user) {
+        res.json({
+            name: req.user.displayName,
+            avatar: req.user.photos && req.user.photos[0] ? req.user.photos[0].value : null,
+            steamId: req.user.id,
+            profileUrl: req.user.profileUrl
+        });
+    } else {
+        res.json(null);
+    }
 });
-
 
 // --- 8. Iniciar Servidor ---
 app.listen(3000, () => {
