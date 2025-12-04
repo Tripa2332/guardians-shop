@@ -9,7 +9,7 @@
    <link href="../assets/css/output.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+<script src="../assets/js/load-navbar.js"></script>
    
 
     <style>
@@ -141,7 +141,7 @@ function showCopyNotification(message) {
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
-
+<nav id="navbar-container"></nav>
     <section class="py-24 relative overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-guardian-gold opacity-5 blur-[150px] rounded-full"></div>
@@ -684,6 +684,6 @@ function showCopyNotification(message) {
             document.getElementById('footer-container').innerHTML = data;
         });
 </script>
-
+<div id="footer-container"></div>
 </body>
 </html>

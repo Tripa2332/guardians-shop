@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info - The Guardians</title>
+    
+    <link href="../assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/navbar-styles.css">
+    <script src="../assets/js/load-navbar.js"></script>
+    
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; }
+        
+        /* Brillo VIP Badge */
+        .vip-badge {
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: vipGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes vipGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                            0 0 20px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                            0 0 40px rgba(255, 215, 0, 0.5);
+            }
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .card-info {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .card-info:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .card-info h3 {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-info i {
+            font-size: 1.75rem;
+        }
+        
+        .card-info p {
+            color: #d1d5db;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+        
+        .accordion-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .accordion-header {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .accordion-header:hover {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border-bottom-color: #FFD700;
+        }
+        
+        .accordion-header h4 {
+            color: #FFD700;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .accordion-icon {
+            font-size: 1.5rem;
+            color: #FFD700;
+            transition: transform 0.3s ease;
+        }
+        
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 1.5rem;
+        }
+        
+        .accordion-item.active .accordion-content {
+            max-height: 500px;
+            padding: 1.5rem;
+        }
+        
+        .accordion-content p {
+            color: #d1d5db;
+            line-height: 1.8;
+            margin: 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .stat-box:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #9ca3af;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #FFD700 0%, transparent 100%);
+            border-radius: 4px;
+        }
+        
+        .timeline-item {
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+            padding-right: 52%;
+        }
+        
+        .timeline-item:nth-child(even) {
+            margin-left: 52%;
+            padding-left: 2rem;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: #FFD700;
+            border: 4px solid #1a1a1a;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .timeline-content {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .timeline-content h4 {
+            color: #FFD700;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .timeline-content p {
+            color: #d1d5db;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 165, 0, 0.02) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .feature-card:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: #FFD700;
+            margin: 1rem 0;
+        }
+        
+        .feature-card p {
+            color: #d1d5db;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section {
+            padding: 4rem 2rem;
+        }
+        
+        .container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-guardian-dark text-gray-200 font-ark">
+    <nav id="navbar-container"></nav>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-gradient-to-b from-guardian-dark/95 to-guardian-dark/98"></div>
+        <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-guardian-gold opacity-5 blur-[180px] rounded-full pointer-events-none"></div>
+        
+        <div class="relative z-10 container-custom text-center">
+            <h1 class="section-title text-4xl md:text-5xl">THE GUARDIANS</h1>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Descubre todo sobre nuestra comunidad, reglas y misión en el mundo de ARK</p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section container-custom">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Jugadores Activos</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Servidores</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Soporte Premium</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">5★</div>
+                <div class="stat-label">Calificación</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reglas Section -->
+    <section class="section container-custom">
+        <h2 class="section-title">📋 Reglas del Servidor</h2>
+        
+        <div id="rulasAccordion">
+            <div class="accordion-item active">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4><i class="fas fa-ban mr-2"></i>Prohibiciones Generales</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>❌ Griefing o destrucción de bases ajenas sin consentimiento<br>
+                    ❌ Uso de hacks, glitches o exploits<br>
+                    ❌ Spam o lenguaje ofensivo en chat<br>
+                    ❌ Sharing de cuentas o venta de items por dinero real<br>
+                    ❌ Taming de dinos en zonas prohibidas<br>
+                    ❌ AFK farming automático</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4><i class="fas fa-shield-alt mr-2"></i>PvP y Combate</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>⚔️ PvP permitido fuera de zonas de armisticio<br>
+                    ⚔️ No permitido el raiding de bases durante horas específicas<br>
+                    ⚔️ Máximo 10 minutos de combate sin tregua<br>
+                    ⚔️ Prohibido el camping en bases enemigas<br>
+                    ⚔️ Respetar el límite de dinos en defensa</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4><i class="fas fa-home mr-2"></i>Construcción y Bases</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>🏗️ Máximo 3 bases por tribu<br>
+                    🏗️ Distancia mínima de 200 fundaciones entre bases<br>
+                    🏗️ No bloquear recursos o biomas enteros<br>
+                    🏗️ Bases abandonadas se limpian después de 2 semanas inactivo<br>
+                    🏗️ No construir en puntos de spawn</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4><i class="fas fa-dragon mr-2"></i>Dinosaurios y Taming</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>🦕 Máximo 50 dinos por tribu<br>
+                    🦕 Dinos de defensa: máximo 10<br>
+                    🦕 Prohibido taming de dinos raros en ciertas áreas<br>
+                    🦕 Dinos salvajes respetan 1 km de distancia<br>
+                    🦕 Dinos muertos = limpieza automática en 24h</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4><i class="fas fa-gavel mr-2"></i>Sanciones</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>⚠️ 1ª infracción: Advertencia + pérdida de items<br>
+                    ⚠️ 2ª infracción: Suspensión temporal (24h)<br>
+                    ⚠️ 3ª infracción: Suspensión (7 días)<br>
+                    ⚠️ 4ª infracción: Ban permanente<br>
+                    ⚠️ Exploits graves: Ban inmediato</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Características Section -->
+    <section class="section container-custom">
+        <h2 class="section-title">✨ Características</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-bolt feature-icon"></i>
+                <h3>Velocidad Premium</h3>
+                <p>Servidores optimizados con la mejor velocidad de respuesta del mercado</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3>Seguridad Total</h3>
+                <p>Anti-hacks, anti-glitches y protección contra griefing</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-users feature-icon"></i>
+                <h3>Comunidad Activa</h3>
+                <p>Más de 1000 jugadores en eventos y competiciones constantes</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-star feature-icon"></i>
+                <h3>Eventos Especiales</h3>
+                <p>Torneo mensual, raids épicas y eventos temáticos</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-headset feature-icon"></i>
+                <h3>Soporte 24/7</h3>
+                <p>Equipo de admins disponible en Discord siempre</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-crown feature-icon"></i>
+                <h3>Beneficios VIP</h3>
+                <p>Acceso a contenido exclusivo y comandos especiales</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Historia Section -->
+    <section class="section container-custom">
+        <h2 class="section-title">📖 Nuestra Historia</h2>
+        
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>2019 - El Inicio</h4>
+                    <p>Fundación de The Guardians con un pequeño grupo de 50 jugadores</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>2020 - Crecimiento</h4>
+                    <p>Expansión a 10 servidores con más de 500 jugadores activos</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>2022 - Evolución</h4>
+                    <p>Lanzamiento de nuestra tienda premium y sistema VIP</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>2024 - Presente</h4>
+                    <p>Somos la comunidad más grande de ARK en América Latina</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section container-custom">
+        <h2 class="section-title">❓ Preguntas Frecuentes</h2>
+        
+        <div id="faqAccordion">
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>¿Cómo me uno a un servidor?</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Solo necesitas tener ARK Survival Evolved, crear una cuenta en nuestra página, elegir tu servidor favorito y conectarte. ¡Es muy simple!</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>¿Qué es una tribu?</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Una tribu es un grupo de jugadores que pueden trabajar juntos, compartir recursos y construir bases colectivas. Puedes crear una o unirte a una existente.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>¿Hay wipe de servidores?</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>No hacemos wipes regulares. Solo limpiamos bases abandonadas cada 2 semanas. Los servidores son persistentes.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>¿Vale la pena el VIP?</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Absolutamente. Con VIP obtienes 2x experiencia, acceso a áreas exclusivas, comandos especiales y soporte prioritario. Totalmente recomendado.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>¿Cómo reporto un jugador problemático?</h4>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Puedes reportar a través de Discord usando el canal #reportes, o contactar directamente a nuestros admins. Revisaremos todo con evidencia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section container-custom">
+        <div class="card-info">
+            <h3 class="text-center text-2xl mb-4">📞 ¿Preguntas?</h3>
+            <p class="text-center">Únete a nuestro Discord y contacta con nuestro equipo de soporte. Estamos disponibles 24/7 para ayudarte.</p>
+            <div class="text-center mt-4">
+                <a href="#" class="inline-block bg-gradient-to-r from-guardian-gold to-guardian-bronze hover:shadow-lg hover:shadow-guardian-gold/50 text-black font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                    <i class="fab fa-discord mr-2"></i>Únete a Discord
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script>
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            document.querySelectorAll('.accordion-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const cookies = document.cookie.split(';');
+                for(let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.indexOf(nameEQ) === 0) {
+                        return decodeURIComponent(cookie.substring(nameEQ.length));
+                    }
+                }
+                return null;
+            }
+
+            const userCookie = getCookie('userData');
+            if (userCookie) {
+                localStorage.setItem('currentUser', userCookie);
+                document.cookie = "userData=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            }
+            
+            loadFooter();
+        });
+
+        function loadFooter() {
+            fetch('../components/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                });
+        }
+    </script>
+</body>
+</html>

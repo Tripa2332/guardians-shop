@@ -10,7 +10,6 @@
     <link href="../assets/css/output.css" rel="stylesheet">
     
     <link rel="stylesheet" href="../assets/css/navbar-styles.css">
-    <script src="../components/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
     <!-- Contenedor para la navbar -->
@@ -128,39 +127,7 @@
 
     <div id="footer-container"></div>
 
-<script>
-    // Verificar si el usuario está logueado al cargar la página
-    function checkUserLogin() {
-        const user = localStorage.getItem('currentUser');
-        
-        if (user) {
-            const userData = JSON.parse(user);
-            showUserProfile(userData);
-        }
-    }
-
-    function showUserProfile(userData) {
-        document.getElementById('btnAcceder').classList.add('hidden');
-        document.getElementById('userProfile').classList.remove('hidden');
-        document.getElementById('userName').textContent = userData.name || 'Usuario';
-        document.getElementById('userAvatar').src = userData.avatar || 'https://via.placeholder.com/40/FFD700/1C1C1C?text=' + userData.name.charAt(0);
-    }
-
-    function logout() {
-        localStorage.removeItem('currentUser');
-        location.reload();
-    }
-
-    // Evento para logout al hacer click en el perfil
-    document.getElementById('userProfile')?.addEventListener('click', () => {
-        if (confirm('¿Deseas cerrar sesión?')) {
-            logout();
-        }
-    });
-
-    // Ejecutar al cargar
-    checkUserLogin();
-</script>
+<script src="../assets/js/load-navbar.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Leer cookie de userData si existe
@@ -182,16 +149,7 @@
             document.cookie = "userData=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         }
         
-        // Cargar navbar PRIMERO
-        fetch('../components/navbar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('navbar-container').innerHTML = html;
-                // AHORA sí ejecutar funciones que dependen del navbar
-                initUserProfile();
-                setupDropdownMenu();
-                loadFooter();
-            });
+        loadFooter();
     });
 
     function loadFooter() {

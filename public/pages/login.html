@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - The Guardians</title>
     
+    <script src="../assets/js/load-navbar.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -161,7 +162,7 @@
     <script src="../assets/js/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
-
+<nav id="navbar-container"></nav>
     <div class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-gradient-to-b from-guardian-dark/95 to-guardian-dark/98"></div>
         <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-guardian-gold opacity-5 blur-[180px] rounded-full pointer-events-none"></div>
@@ -257,5 +258,6 @@
                 document.getElementById('footer-container').innerHTML = data;
             });
     </script>
+    <div id="footer-container"></div>
 </body>
 </html>
