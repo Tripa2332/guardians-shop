@@ -49,73 +49,6 @@
             box-shadow: 0 12px 40px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1);
         }
 
-        .input-field {
-            background: rgba(10, 10, 10, 0.8);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            color: #F2E8C4;
-            padding: 12px 16px;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            font-family: 'Rajdhani', sans-serif;
-        }
-
-        .input-field::placeholder {
-            color: #666;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #FFD700;
-            background: rgba(10, 10, 10, 0.9);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #FFD700, #C5A059);
-            color: #0A0A0A;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0px);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px solid #FFD700;
-            color: #FFD700;
-            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.05);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 215, 0, 0.2);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
         .text-gradient-gold {
             background: linear-gradient(to right, #FFD700, #F2E8C4);
             -webkit-background-clip: text;
@@ -127,39 +60,110 @@
             background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.3), transparent);
         }
 
-        .label-text {
-            font-size: 12px;
+        /* OAuth Button Styles */
+        .oauth-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: #F2E8C4;
-        }
-
-        .checkbox-custom {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            border-radius: 4px;
-            background: rgba(10, 10, 10, 0.8);
-            cursor: pointer;
             transition: all 0.3s ease;
+            border: 2px solid;
+            cursor: pointer;
+            overflow: hidden;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            width: 100%;
+            justify-content: center;
         }
 
-        .checkbox-custom:checked {
-            background: #FFD700;
-            border-color: #FFD700;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        /* Steam Button */
+        .btn-steam {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(20, 20, 20, 0.6) 100%);
+            border-color: #1B6BA8;
+            color: #FFFFFF;
+            box-shadow: 0 0 20px rgba(27, 107, 168, 0.3), inset 0 0 20px rgba(27, 107, 168, 0.05);
         }
 
-        .checkbox-custom:checked::after {
-            content: '✓';
-            color: #0A0A0A;
-            font-weight: bold;
+        .btn-steam:hover {
+            background: linear-gradient(135deg, rgba(27, 107, 168, 0.3) 0%, rgba(27, 107, 168, 0.2) 100%);
+            border-color: #1B6BA8;
+            box-shadow: 0 0 30px rgba(27, 107, 168, 0.5), inset 0 0 20px rgba(27, 107, 168, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .btn-steam i {
+            font-size: 1.5rem;
+            color: #1B6BA8;
+        }
+
+        /* Discord Button */
+        .btn-discord {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(20, 20, 20, 0.6) 100%);
+            border-color: #5865F2;
+            color: #FFFFFF;
+            box-shadow: 0 0 20px rgba(88, 101, 242, 0.3), inset 0 0 20px rgba(88, 101, 242, 0.05);
+        }
+
+        .btn-discord:hover {
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.3) 0%, rgba(88, 101, 242, 0.2) 100%);
+            border-color: #5865F2;
+            box-shadow: 0 0 30px rgba(88, 101, 242, 0.5), inset 0 0 20px rgba(88, 101, 242, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .btn-discord i {
+            font-size: 1.5rem;
+            color: #5865F2;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(197, 160, 89, 0.03) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box p {
+            color: #C5A059;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .info-box i {
+            color: #FFD700;
+            margin-right: 0.5rem;
+        }
+
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #FFD700;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-badge i {
+            margin: 0;
         }
     </style>
     <link rel="stylesheet" href="../assets/css/navbar-styles.css">
-    <script src="../assets/js/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 <nav id="navbar-container"></nav>
@@ -169,73 +173,60 @@
         <div class="absolute bottom-20 right-10 w-80 h-80 bg-guardian-bronze opacity-3 blur-[160px] rounded-full pointer-events-none"></div>
 
         <div class="relative z-10 w-full max-w-md px-6 sm:px-4">
-            <div class="glass-panel p-10 rounded-2xl">
+            <div class="glass-panel p-12 rounded-2xl">
                 
                 <!-- Header -->
-                <div class="text-center mb-10">
-                    <div class="mb-6 flex justify-center">
-                        <img src="../assets/img/mina.png" alt="The Guardians Logo" class="h-28 w-auto object-contain drop-shadow-[0_0_25px_rgba(255,215,0,0.4)] transform transition-transform duration-300 hover:scale-110">
+                <div class="text-center mb-12">
+                    <div class="mb-8 flex justify-center">
+                        <img src="../assets/img/mina.png" alt="The Guardians Logo" class="h-32 w-auto object-contain drop-shadow-[0_0_25px_rgba(255,215,0,0.4)] transform transition-transform duration-300 hover:scale-110">
                     </div>
-                    <h1 class="text-4xl font-bold uppercase tracking-[0.15em] text-gradient-gold mb-3">The Guardians</h1>
-                    <p class="text-gray-400 text-sm tracking-wide">Accede a tu cuenta</p>
+                    <h1 class="text-4xl font-bold uppercase tracking-[0.15em] text-gradient-gold mb-2">The Guardians</h1>
+                    <p class="text-gray-500 text-sm tracking-widest font-bold">INGRESA A TU IMPERIO</p>
                 </div>
 
-                <!-- Form -->
-                <form class="space-y-6 mb-8">
-                    <!-- Email Field -->
-                    <div>
-                        <label class="label-text block mb-3">📧 Email</label>
-                        <input type="email" placeholder="tu@email.com" class="input-field" required>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div>
-                        <label class="label-text block mb-3">🔐 Contraseña</label>
-                        <input type="password" placeholder="••••••••" class="input-field" required>
-                    </div>
-
-                    <!-- Remember & Forgot -->
-                    <div class="flex items-center justify-between text-xs">
-                        <label class="flex items-center cursor-pointer group">
-                            <input type="checkbox" class="checkbox-custom" checked>
-                            <span class="ml-2 text-gray-400 group-hover:text-guardian-gold transition">Recuérdame</span>
-                        </label>
-                        <a href="#" class="text-guardian-gold hover:text-guardian-cream transition font-bold">¿Olvidaste tu contraseña?</a>
-                    </div>
-
-                    <!-- Login Button -->
-                    <button type="submit" class="btn-login btn-primary mt-8">
-                        <i class="fas fa-sign-in-alt mr-3"></i> Iniciar Sesión
-                    </button>
-                </form>
+                <!-- Info Box -->
+                
 
                 <!-- Divider -->
                 <div class="relative mb-8">
                     <div class="divider-line h-px w-full"></div>
-                    <div class="absolute left-1/2 -translate-x-1/2 -top-3 px-3 bg-guardian-panel text-gray-400 text-xs uppercase tracking-wider font-bold">O continúa con</div>
+                    <div class="absolute left-1/2 -translate-x-1/2 -top-3 px-3 bg-guardian-panel text-gray-400 text-xs uppercase tracking-wider font-bold">ELIGE TU PLATAFORMA</div>
                 </div>
 
                 <!-- OAuth Buttons -->
-                <div class="space-y-3 mb-8">
-                    <a href="http://localhost:3000/auth/steam" class="btn-login btn-secondary w-full block text-center">
-                        <i class="fab fa-steam mr-3 text-lg"></i> Steam
+                <div class="space-y-4 mb-10">
+                    <a href="http://localhost:3000/auth/steam" class="oauth-btn btn-steam group">
+                        <i class="fab fa-steam transition group-hover:scale-110"></i>
+                        <span class="transition">Conectar con Steam</span>
                     </a>
-                    <a href="http://localhost:3000/auth/discord" class="btn-login btn-secondary w-full block text-center">
-                        <i class="fab fa-discord mr-3 text-lg"></i> Discord
+                    <a href="http://localhost:3000/auth/discord" class="oauth-btn btn-discord group">
+                        <i class="fab fa-discord transition group-hover:scale-110"></i>
+                        <span class="transition">Conectar con Discord</span>
                     </a>
                 </div>
 
-                <!-- Register Link -->
-                <div class="text-center pb-8 border-b border-guardian-gold/20">
-                    <p class="text-gray-400 text-sm">
-                        ¿No tienes cuenta? 
-                        <a href="register.html" class="text-guardian-gold hover:text-guardian-cream transition font-bold ml-1">Regístrate aquí</a>
-                    </p>
+                <!-- Divider -->
+                <div class="divider-line h-px w-full mb-8"></div>
+
+                <!-- Features -->
+                <div class="space-y-3 mb-8">
+                    <div class="flex items-center gap-3 text-sm text-gray-400">
+                        <span class="text-guardian-gold"><i class="fas fa-check-circle"></i></span>
+                        <span>Acceso instantáneo a tu tienda</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-gray-400">
+                        <span class="text-guardian-gold"><i class="fas fa-check-circle"></i></span>
+                        <span>Gestiona tu inventario fácilmente</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-gray-400">
+                        <span class="text-guardian-gold"><i class="fas fa-check-circle"></i></span>
+                        <span>Datos seguros y verificados</span>
+                    </div>
                 </div>
 
                 <!-- Back Button -->
-                <div class="mt-8 pt-6">
-                    <a href="index.html" class="flex items-center justify-center text-guardian-gold hover:text-guardian-cream transition text-sm font-bold uppercase tracking-[0.1em] group">
+                <div class="text-center pt-6 border-t border-guardian-gold/20">
+                    <a href="index.html" class="inline-flex items-center justify-center text-guardian-gold hover:text-guardian-cream transition text-sm font-bold uppercase tracking-[0.1em] group mt-6">
                         <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition"></i> Volver al Inicio
                     </a>
                 </div>
@@ -243,7 +234,7 @@
 
             <!-- Footer -->
             <p class="text-center text-gray-600 text-xs mt-8 tracking-wide">
-                Al acceder, aceptas nuestros <span class="text-guardian-gold">Términos de Servicio</span>
+                Al acceder, aceptas nuestros <span class="text-guardian-gold">Términos de Servicio</span> y <span class="text-guardian-gold">Política de Privacidad</span>
             </p>
         </div>
     </div>
@@ -258,6 +249,5 @@
                 document.getElementById('footer-container').innerHTML = data;
             });
     </script>
-    <div id="footer-container"></div>
 </body>
 </html>

@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/navbar-styles.css">
     <script src="../assets/js/load-navbar.js"></script>
-    
     <style>
         body { font-family: 'Rajdhani', sans-serif; }
         
@@ -319,19 +318,135 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
+        /* HERO SECTION CON FONDO DIFUMINADO */
+        .hero-section {
+            position: relative;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: 1;
+            filter: blur(8px) brightness(0.4);
+            transform: scale(1.1);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 10, 0.85) 0%,
+                rgba(10, 10, 10, 0.75) 50%,
+                rgba(255, 215, 0, 0.1) 100%);
+            z-index: 2;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent, rgba(10, 10, 10, 0.9));
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            line-height: 1.8;
+        }
+
+        .glow-orb {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .glow-orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+            top: -100px;
+            left: -150px;
+            filter: blur(80px);
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.1) 0%, transparent 70%);
+            bottom: -50px;
+            right: -100px;
+            filter: blur(60px);
+            animation: float 20s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(30px, -30px);
+            }
+        }
     </style>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
     <nav id="navbar-container"></nav>
 
-    <!-- Hero Section -->
-    <section class="relative py-20 overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center;">
-        <div class="absolute inset-0 bg-gradient-to-b from-guardian-dark/95 to-guardian-dark/98"></div>
-        <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-guardian-gold opacity-5 blur-[180px] rounded-full pointer-events-none"></div>
+    <!-- Hero Section with Background Image -->
+    <section class="hero-section">
+        <div class="hero-background" style="background-image: url('../assets/img/tekbow.jpg');"></div>
         
-        <div class="relative z-10 container-custom text-center">
-            <h1 class="section-title text-4xl md:text-5xl">THE GUARDIANS</h1>
-            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Descubre todo sobre nuestra comunidad, reglas y misión en el mundo de ARK</p>
+        <div class="hero-overlay"></div>
+        
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        
+        <div class="hero-content">
+            <h1>THE GUARDIANS</h1>
+            <p>Descubre todo sobre nuestra comunidad, reglas y misión en el mundo de ARK. Únete a miles de jugadores en una experiencia épica</p>
         </div>
     </section>
 
@@ -474,45 +589,6 @@
                 <i class="fas fa-crown feature-icon"></i>
                 <h3>Beneficios VIP</h3>
                 <p>Acceso a contenido exclusivo y comandos especiales</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Historia Section -->
-    <section class="section container-custom">
-        <h2 class="section-title">📖 Nuestra Historia</h2>
-        
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>2019 - El Inicio</h4>
-                    <p>Fundación de The Guardians con un pequeño grupo de 50 jugadores</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>2020 - Crecimiento</h4>
-                    <p>Expansión a 10 servidores con más de 500 jugadores activos</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>2022 - Evolución</h4>
-                    <p>Lanzamiento de nuestra tienda premium y sistema VIP</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>2024 - Presente</h4>
-                    <p>Somos la comunidad más grande de ARK en América Latina</p>
-                </div>
             </div>
         </div>
     </section>
