@@ -86,15 +86,81 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        @keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
     </style>
       <link rel="stylesheet" href="navbar-styles.css">
     <script src="load-navbar.js"></script>
+    <script>
+function connectToServer(ip) {
+    const steamUrl = `steam://run/346110//+connect ${ip}`;
+    window.location.href = steamUrl;
+    
+}
+function copyToClipboard(ip) {
+    navigator.clipboard.writeText(ip).then(() => {
+        showCopyNotification('✓ IP copiada al portapapeles');
+    }).catch(() => {
+        // Fallback para navegadores antiguos
+        const textarea = document.createElement('textarea');
+        textarea.value = ip;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyNotification('✓ IP copiada al portapapeles');
+    });
+}
+
+function showCopyNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #10B981;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: bold;
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
+</script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
-   
-
-  
 
     <section class="py-24 relative overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
@@ -112,14 +178,16 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
                 
-                <!-- Survival PvP -->
+                
+
+                <!-- TheIsland -->
                 <div class="ip-box group">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
-                                Survival PvP
+                                🔱 The Island
                             </h3>
-                            <p class="text-sm text-gray-500">Servidor Principal</p>
+                            <p class="text-sm text-gray-500">Mapa Clásico</p>
                         </div>
                         <div class="text-right">
                             <span class="status-online"></span>
@@ -128,28 +196,28 @@
                     </div>
                     
                     <div class="bg-guardian-dark/50 p-4 rounded mb-4 border border-guardian-gold/20">
-                        <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
-                            <div>
-                                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
-                                <p class="text-guardian-gold font-bold text-lg font-mono">play.guardians.ark:27015</p>
-                            </div>
-                            <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
-                        </div>
-                    </div>
+    <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition" onclick="copyToClipboard('179.38.144.218:20001')">
+        <div>
+            <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
+            <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20001</p>
+        </div>
+        <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
+    </div>
+</div>
 
                     <div class="space-y-3 text-sm">
                         <div class="flex items-start">
                             <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Jugadores Online</p>
-                                <p class="text-gray-500">87/128</p>
+                                <p class="text-gray-500">128/128</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Versión</p>
-                                <p class="text-gray-500">v346.89 - Steam</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -163,24 +231,24 @@
                             <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Modo</p>
-                                <p class="text-gray-500">PvP + Raiding</p>
+                                <p class="text-gray-500">PvP</p>
                             </div>
                         </div>
                     </div>
 
-                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300">
+                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300" onclick="connectToServer('179.38.144.218:20001')">
                         <i class="fas fa-play mr-2"></i> Conectar
                     </button>
                 </div>
 
-                <!-- Creative Building -->
+                <!-- TheCenter -->
                 <div class="ip-box group">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
-                                Creative Building
+                                🔱 The Center
                             </h3>
-                            <p class="text-sm text-gray-500">Sandbox & Creatividad</p>
+                            <p class="text-sm text-gray-500">Mapa Central</p>
                         </div>
                         <div class="text-right">
                             <span class="status-online"></span>
@@ -192,7 +260,7 @@
                         <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
-                                <p class="text-guardian-gold font-bold text-lg font-mono">creative.guardians.ark:27016</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20002</p>
                             </div>
                             <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
                         </div>
@@ -203,14 +271,14 @@
                             <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Jugadores Online</p>
-                                <p class="text-gray-500">34/64</p>
+                                <p class="text-gray-500">95/128</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Versión</p>
-                                <p class="text-gray-500">v346.89 - Steam</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -224,7 +292,7 @@
                             <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Modo</p>
-                                <p class="text-gray-500">Creativo - Sin límites</p>
+                                <p class="text-gray-500">PvP</p>
                             </div>
                         </div>
                     </div>
@@ -234,14 +302,14 @@
                     </button>
                 </div>
 
-                <!-- Hardcore Raid -->
+                <!-- Fjordur -->
                 <div class="ip-box group">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
-                                Hardcore Raid
+                                🔱 Fjordur
                             </h3>
-                            <p class="text-sm text-gray-500">Solo para Veteranos</p>
+                            <p class="text-sm text-gray-500">Tierras Nórdicas</p>
                         </div>
                         <div class="text-right">
                             <span class="status-online"></span>
@@ -253,7 +321,7 @@
                         <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
-                                <p class="text-guardian-gold font-bold text-lg font-mono">hardcore.guardians.ark:27017</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20003</p>
                             </div>
                             <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
                         </div>
@@ -264,14 +332,14 @@
                             <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Jugadores Online</p>
-                                <p class="text-gray-500">56/128</p>
+                                <p class="text-gray-500">112/128</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Versión</p>
-                                <p class="text-gray-500">v346.89 - Steam</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -285,7 +353,7 @@
                             <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Modo</p>
-                                <p class="text-gray-500">Extreme PvP + Raids</p>
+                                <p class="text-gray-500">PvP</p>
                             </div>
                         </div>
                     </div>
@@ -295,14 +363,14 @@
                     </button>
                 </div>
 
-                <!-- PvE Relaxed -->
+                <!-- Crystal Isles -->
                 <div class="ip-box group">
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
-                                PvE Relajado
+                                🔱 Crystal Isles
                             </h3>
-                            <p class="text-sm text-gray-500">Cooperativo</p>
+                            <p class="text-sm text-gray-500">Islas de Cristal</p>
                         </div>
                         <div class="text-right">
                             <span class="status-online"></span>
@@ -314,7 +382,7 @@
                         <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
-                                <p class="text-guardian-gold font-bold text-lg font-mono">pve.guardians.ark:27018</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20004</p>
                             </div>
                             <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
                         </div>
@@ -325,14 +393,14 @@
                             <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Jugadores Online</p>
-                                <p class="text-gray-500">102/256</p>
+                                <p class="text-gray-500">78/128</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Versión</p>
-                                <p class="text-gray-500">v346.89 - Steam</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -346,7 +414,7 @@
                             <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
                             <div>
                                 <p class="font-bold text-gray-300">Modo</p>
-                                <p class="text-gray-500">PvE + Cooperativo</p>
+                                <p class="text-gray-500">PvP</p>
                             </div>
                         </div>
                     </div>
@@ -356,6 +424,249 @@
                     </button>
                 </div>
 
+                <!-- Extinction -->
+                <div class="ip-box group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
+                                🔱 Extinction
+                            </h3>
+                            <p class="text-sm text-gray-500">Planeta Devastado</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="status-online"></span>
+                            <span class="text-xs text-green-400 font-bold">ONLINE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-guardian-dark/50 p-4 rounded mb-4 border border-guardian-gold/20">
+                        <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20005</p>
+                            </div>
+                            <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Jugadores Online</p>
+                                <p class="text-gray-500">91/128</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Versión</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-globe text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Región</p>
+                                <p class="text-gray-500">Latinoamérica (CL)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Modo</p>
+                                <p class="text-gray-500">PvP</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300">
+                        <i class="fas fa-play mr-2"></i> Conectar
+                    </button>
+                </div>
+
+                <!-- Ragnarok -->
+                <div class="ip-box group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
+                                🔱 Ragnarok
+                            </h3>
+                            <p class="text-sm text-gray-500">El Fin de los Dioses</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="status-online"></span>
+                            <span class="text-xs text-green-400 font-bold">ONLINE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-guardian-dark/50 p-4 rounded mb-4 border border-guardian-gold/20">
+                        <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20006</p>
+                            </div>
+                            <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Jugadores Online</p>
+                                <p class="text-gray-500">124/128</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Versión</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-globe text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Región</p>
+                                <p class="text-gray-500">Latinoamérica (CL)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Modo</p>
+                                <p class="text-gray-500">PvP</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300">
+                        <i class="fas fa-play mr-2"></i> Conectar
+                    </button>
+                </div>
+
+                <!-- Valguero -->
+                <div class="ip-box group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
+                                🔱 Valguero
+                            </h3>
+                            <p class="text-sm text-gray-500">Tierra de Aventuras</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="status-online"></span>
+                            <span class="text-xs text-green-400 font-bold">ONLINE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-guardian-dark/50 p-4 rounded mb-4 border border-guardian-gold/20">
+                        <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20007</p>
+                            </div>
+                            <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Jugadores Online</p>
+                                <p class="text-gray-500">67/128</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Versión</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-globe text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Región</p>
+                                <p class="text-gray-500">Latinoamérica (CL)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Modo</p>
+                                <p class="text-gray-500">PvP</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300">
+                        <i class="fas fa-play mr-2"></i> Conectar
+                    </button>
+                </div>
+
+                <!-- Aberration -->
+                <div class="ip-box group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-guardian-cream group-hover:text-guardian-gold transition mb-1">
+                                🔱 Aberration
+                            </h3>
+                            <p class="text-sm text-gray-500">Profundidades Alienígenas</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="status-online"></span>
+                            <span class="text-xs text-green-400 font-bold">ONLINE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-guardian-dark/50 p-4 rounded mb-4 border border-guardian-gold/20">
+                        <div class="flex items-center justify-between cursor-pointer copy-btn group/copy hover:bg-guardian-gold/10 p-3 rounded transition">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">IP Address</p>
+                                <p class="text-guardian-gold font-bold text-lg font-mono">179.38.144.218:20008</p>
+                            </div>
+                            <i class="fas fa-copy text-guardian-gold group-hover/copy:scale-125 transition"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-users text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Jugadores Online</p>
+                                <p class="text-gray-500">83/128</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-server text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Versión</p>
+                                <p class="text-gray-500">Pre Aquatic - Steam</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-globe text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Región</p>
+                                <p class="text-gray-500">Latinoamérica (CL)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt text-guardian-gold mr-3 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-gray-300">Modo</p>
+                                <p class="text-gray-500">PvP</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 bg-guardian-gold text-guardian-dark py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300">
+                        <i class="fas fa-play mr-2"></i> Conectar
+                    </button>
+                </div>
             </div>
 
             <div class="mt-16 glass-panel p-8 rounded-xl border-guardian-gold/30">
