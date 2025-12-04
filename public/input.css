@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fuentes */
+  --font-ark: 'Rajdhani', sans-serif;
+
+  /* Colores */
+  --color-guardian-dark: #0A0A0A;
+  --color-guardian-panel: #1C1C1C;
+  --color-guardian-gold: #FFD700;
+  --color-guardian-bronze: #C5A059;
+  --color-guardian-cream: #F2E8C4;
+  
+  /* Sombras (En v4 se definen así o podés usar clases arbitrarias, 
+     pero por ahora definimos los colores base arriba) */
+}
+
+/* Estilos extra que tenías en el HTML */
+.glass-panel {
+    background: rgba(28, 28, 28, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.glass-panel:hover {
+    border-color: #FFD700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    transform: translateY(-5px);
+}
