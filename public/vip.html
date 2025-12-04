@@ -185,13 +185,14 @@
             
             if (!userJson) {
                 alert("⚠️ DEBES INICIAR SESIÓN");
+                window.location.href = '/';
                 return;
             }
 
             const user = JSON.parse(userJson);
             const btn = event.currentTarget;
 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
             btn.disabled = true;
 
             try {
@@ -203,27 +204,26 @@
                         price: Number(precio),
                         quantity: 1,
                         itemId: itemId,
-                        userId: user.id // Usar ID, no nombre
+                        userId: user.steamId || user.discordId || user.id
                     })
                 });
 
+                const data = await response.json();
+
                 if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || "Error del servidor");
+                    throw new Error(data.message || "Error del servidor");
                 }
 
-                const preference = await response.json();
-
-                if (preference.init_point) {
-                    window.location.href = preference.init_point;
+                if (data.init_point) {
+                    console.log('🔗 Redirigiendo a:', data.init_point);
+                    window.location.href = data.init_point;
                 } else {
-                    throw new Error("Mercado Pago no devolvió el link de pago");
+                    throw new Error("No se recibió link de Mercado Pago");
                 }
 
             } catch (error) {
-                console.error('Error de compra:', error);
-                alert(`❌ Error: ${error.message}`);
-            } finally {
+                console.error('❌ Error de compra:', error);
+                alert(`Error: ${error.message}`);
                 btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Comprar';
                 btn.disabled = false;
             }

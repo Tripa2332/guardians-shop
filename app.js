@@ -51,7 +51,7 @@ passport.deserializeUser((obj, done) => {
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:3000/auth/steam/return',
     realm: 'http://localhost:3000/',
-    apiKey: 'C661EA61498725A379CA1F8043804908'
+    apiKey: process.env.STEAM_API_KEY
   },
   (identifier, profile, done) => {
     return done(null, profile);
@@ -60,8 +60,8 @@ passport.use(new SteamStrategy({
 
 // --- 3b. Estrategia de Discord ---
 passport.use(new DiscordStrategy({
-    clientID: '1445970263647850551',
-    clientSecret: 'ufa0qW2nS5Bx7P9nW3NbEG-3y9IyLBPM',
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
     callbackURL: 'http://localhost:3000/auth/discord/return',
     scope: ['identify', 'email']
   },
@@ -81,7 +81,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/crear-orden', async (req, res) => {
     try {
         // Obtenemos los datos desde el frontend
-        const { title, price, quantity, username } = req.body;
+        const { title, price, quantity, userId, itemId } = req.body;
+
+        // VALIDACIONES
+        if (!title || !price || !quantity || !userId) {
+            return res.status(400).json({ message: 'Faltan datos requeridos' });
+        }
+
+        if (price <= 0 || quantity <= 0) {
+            return res.status(400).json({ message: 'Precio o cantidad inválida' });
+        }
 
         const preference = new Preference(client);
         const result = await preference.create({
@@ -91,27 +100,27 @@ app.post('/crear-orden', async (req, res) => {
                         title: title,
                         unit_price: Number(price),
                         quantity: Number(quantity),
-                        currency_id: 'ARS', // Cambiar si usas otra moneda
+                        currency_id: 'ARS',
                     }
                 ],
-                // Guardamos el usuario y el ID del item en metadata para usarlos luego
                 metadata: {
-                    player_username: username,
-                    item_id: 'diamond_sword' // Aquí deberías pasar el ID real del item de Ark/Minecraft
+                    player_id: userId,
+                    item_id: itemId
                 },
                 back_urls: {
-                    success: "http://localhost:3000/exito", // Puedes crear una pagina success.html
-                    failure: "http://localhost:3000/fallo",
+                    success: "http://localhost:3000/exito.html",
+                    failure: "http://localhost:3000/fallo.html",
+                    pending: "http://localhost:3000/pendiente.html"
                 },
-                // IMPORTANTE: Aquí va tu URL de Ngrok o Dominio real para que MP te avise
-                notification_url: "https://TU-URL-NGROK.ngrok-free.app/webhook" 
-            }
+                notification_url: "https://mealy-unimperious-antonio.ngrok-free.dev/webhook"            }
         });
 
+        console.log('✅ Preferencia creada:', result.id);
         res.json({ id: result.id, init_point: result.init_point });
+
     } catch (error) {
-        console.error("Error al crear preferencia:", error);
-        res.status(500).send("Error al crear la preferencia");
+        console.error("❌ Error al crear preferencia:", error);
+        res.status(500).json({ message: error.message || "Error al crear la preferencia" });
     }
 });
 
@@ -261,18 +270,7 @@ app.get('/auth/discord/success', (req, res) => {
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <script>
-                    localStorage.removeItem('currentUser');
-                    window.location.href = '/index.html';
-                </script>
-            </head>
-            <body><p>Cerrando sesión...</p></body>
-            </html>
-        `);
+        res.redirect('/');
     });
 });
 
