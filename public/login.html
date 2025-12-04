@@ -251,5 +251,15 @@
         </div>
     </div>
 
+    <!-- Footer Component - FUERA DE TODO -->
+    <div id="footer-container"></div>
+
+    <script>
+        fetch('./components/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            });
+    </script>
 </body>
 </html>
