@@ -157,12 +157,12 @@
             font-weight: bold;
         }
     </style>
-    <link rel="stylesheet" href="navbar-styles.css">
-    <script src="load-navbar.js"></script>
+    <link rel="stylesheet" href="../assets/css/navbar-styles.css">
+    <script src="../assets/js/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
-    <div class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <div class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-gradient-to-b from-guardian-dark/95 to-guardian-dark/98"></div>
         <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-guardian-gold opacity-5 blur-[180px] rounded-full pointer-events-none"></div>
         <div class="absolute bottom-20 right-10 w-80 h-80 bg-guardian-bronze opacity-3 blur-[160px] rounded-full pointer-events-none"></div>
@@ -173,7 +173,7 @@
                 <!-- Header -->
                 <div class="text-center mb-10">
                     <div class="mb-6 flex justify-center">
-                        <img src="./img/mina.png" alt="The Guardians Logo" class="h-28 w-auto object-contain drop-shadow-[0_0_25px_rgba(255,215,0,0.4)] transform transition-transform duration-300 hover:scale-110">
+                        <img src="../assets/img/mina.png" alt="The Guardians Logo" class="h-28 w-auto object-contain drop-shadow-[0_0_25px_rgba(255,215,0,0.4)] transform transition-transform duration-300 hover:scale-110">
                     </div>
                     <h1 class="text-4xl font-bold uppercase tracking-[0.15em] text-gradient-gold mb-3">The Guardians</h1>
                     <p class="text-gray-400 text-sm tracking-wide">Accede a tu cuenta</p>
@@ -227,7 +227,7 @@
                         </button>
                     </a>
                 </div>
-            </a>
+
                 <!-- Register Link -->
                 <div class="text-center pb-8 border-b border-guardian-gold/20">
                     <p class="text-gray-400 text-sm">
@@ -251,11 +251,11 @@
         </div>
     </div>
 
-    <!-- Footer Component - FUERA DE TODO -->
+    <!-- Footer Component -->
     <div id="footer-container"></div>
 
     <script>
-        fetch('./components/footer.html')
+        fetch('../components/footer.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;

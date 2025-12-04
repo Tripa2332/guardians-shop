@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking - The Guardians</title>
     
-    <link href="./output.css" rel="stylesheet">
+    <link href="../assets/css/output.css" rel="stylesheet">
     
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     
@@ -64,8 +64,8 @@
             @apply h-full bg-gradient-to-r from-guardian-gold to-guardian-bronze rounded-full transition-all duration-500;
         }
     </style>
-      <link rel="stylesheet" href="navbar-styles.css">
-    <script src="load-navbar.js"></script>
+      <link rel="stylesheet" href="../assets/css/navbar-styles.css">
+    <script src="../assets/js/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
@@ -446,7 +446,7 @@
     <div id="footer-container"></div>
 
 <script>
-    fetch('./components/footer.html')
+    fetch('../components/footer.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer-container').innerHTML = data;
