@@ -276,7 +276,7 @@ app.get('/logout', (req, res, next) => {
 
 // --- 6. RUTA PRINCIPAL ---
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public/pages', 'index.html'));
 });
 
 // --- 7. API PARA OBTENER USUARIO ---

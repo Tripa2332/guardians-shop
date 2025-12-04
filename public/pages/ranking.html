@@ -13,63 +13,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     
-
-    <style>
-        body { font-family: 'Rajdhani', sans-serif; }
-
-        .glass-panel {
-            background: rgba(28, 28, 28, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .glass-panel:hover {
-            border-color: #FFD700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            transform: translateY(-5px);
-        }
-        
-        .text-gradient-gold {
-            background: linear-gradient(to right, #FFD700, #F2E8C4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .rank-badge {
-            @apply inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm;
-        }
-
-        .rank-1 {
-            @apply bg-gradient-to-br from-yellow-400 to-yellow-600 text-black;
-        }
-
-        .rank-2 {
-            @apply bg-gradient-to-br from-gray-300 to-gray-500 text-black;
-        }
-
-        .rank-3 {
-            @apply bg-gradient-to-br from-orange-400 to-orange-600 text-black;
-        }
-
-        .rank-default {
-            @apply bg-guardian-panel border border-guardian-gold/30 text-guardian-gold;
-        }
-
-        .stat-bar {
-            @apply h-2 bg-guardian-panel rounded-full overflow-hidden;
-        }
-
-        .stat-fill {
-            @apply h-full bg-gradient-to-r from-guardian-gold to-guardian-bronze rounded-full transition-all duration-500;
-        }
-    </style>
       <link rel="stylesheet" href="../assets/css/navbar-styles.css">
     <script src="../assets/js/load-navbar.js"></script>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
 
-    <div class="relative h-96 flex items-center justify-center overflow-hidden" style="background-image: url('./img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <div class="relative h-96 flex items-center justify-center overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
         
         <div class="relative z-10 text-center px-4">
