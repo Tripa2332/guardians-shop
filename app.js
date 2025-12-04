@@ -43,12 +43,10 @@ app.use(passport.session());
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
-// --- ESTRATEGIAS PASSPORT (Actualizadas con BASE_URL) ---
-// Usamos process.env.BASE_URL para no tener que cambiar el código al subir a producción
-
+// --- ESTRATEGIAS PASSPORT ---
 passport.use(new SteamStrategy({
-    returnURL: `${process.env.BASE_URL}/auth/steam/return`,
-    realm: `${process.env.BASE_URL}/`,
+    returnURL: `http://localhost:3000/auth/steam/return`,
+    realm: `http://localhost:3000/`,
     apiKey: process.env.STEAM_API_KEY
   },
   (identifier, profile, done) => done(null, profile)
@@ -57,7 +55,7 @@ passport.use(new SteamStrategy({
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `${process.env.BASE_URL}/auth/discord/return`,
+    callbackURL: `http://localhost:3000/auth/discord/return`,
     scope: ['identify', 'email']
   },
   (accessToken, refreshToken, profile, done) => done(null, profile)

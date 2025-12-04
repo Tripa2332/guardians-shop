@@ -129,14 +129,6 @@
     <div id="footer-container"></div>
 
 <script>
-    fetch('../components/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer-container').innerHTML = data;
-        });
-</script>
-
-<script>
     // Verificar si el usuario está logueado al cargar la página
     function checkUserLogin() {
         const user = localStorage.getItem('currentUser');
@@ -171,14 +163,44 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    fetch('../components/navbar.html')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('navbar-container').innerHTML = html;
-            initUserProfile();
-            setupDropdownMenu();
-        });
-});
+        // Leer cookie de userData si existe
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const cookies = document.cookie.split(';');
+            for(let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(cookie.substring(nameEQ.length));
+                }
+            }
+            return null;
+        }
+
+        const userCookie = getCookie('userData');
+        if (userCookie) {
+            localStorage.setItem('currentUser', userCookie);
+            document.cookie = "userData=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        }
+        
+        // Cargar navbar PRIMERO
+        fetch('../components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+                // AHORA sí ejecutar funciones que dependen del navbar
+                initUserProfile();
+                setupDropdownMenu();
+                loadFooter();
+            });
+    });
+
+    function loadFooter() {
+        fetch('../components/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            });
+    }
 </script>
 </body>
 </html>
