@@ -6,7 +6,7 @@ const MercadoPagoConfig = require('mercadopago').MercadoPagoConfig;
 const Preference = require('mercadopago').Preference;
 const Payment = require('mercadopago').Payment; // Para consultar el estado
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-
+const { Rcon } = require('rcon-client');
 const Product = require('../models/Product');
 // --- Obtener usuario actual ---
 router.get('/user', (req, res) => {
@@ -127,5 +127,80 @@ router.post('/webhook', async (req, res) => {
         res.sendStatus(500);
     }
 });
+// 1. Endpoint para Gráficas de Ventas (Ganancias por día)
+router.get('/admin/sales-chart', async (req, res) => {
+    try {
+        const salesData = await Order.aggregate([
+            { $match: { status: 'approved' } }, // Solo órdenes pagadas
+            {
+                $lookup: {
+                    from: 'products', // Nombre de tu colección de productos en Mongo (suele ser plural)
+                    localField: 'product',
+                    foreignField: '_id',
+                    as: 'productInfo'
+                }
+            },
+            { $unwind: '$productInfo' }, // Descomprimir el array
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    total: { $sum: "$productInfo.price" },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } } // Ordenar por fecha ascendente
+        ]);
+        res.json(salesData);
+    } catch (error) {
+        console.error('Error fetching sales chart:', error);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
 
+// 2. Endpoint para obtener Logs de RCON (Últimas 50 órdenes)
+router.get('/admin/rcon-logs', async (req, res) => {
+    try {
+        const logs = await Order.find()
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .populate('user', 'username steamId') // Traer datos del usuario
+            .populate('product', 'name'); // Traer nombre del producto
+        res.json(logs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error obteniendo logs' });
+    }
+});
+
+// 3. Endpoint para Crear Orden Manual (Sin pasar por MercadoPago)
+router.post('/admin/manual-order', async (req, res) => {
+    const { steamId, productId } = req.body;
+    
+    try {
+        const product = await Product.findById(productId);
+        if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+        // Lógica de comando (similar a tu webhook)
+        const command = `givevip ${steamId} ${product.value}`; // Ajusta según tus comandos reales
+
+        // Crear la orden directamente como 'approved' pero pendiente de entrega
+        const newOrder = new Order({
+            // Nota: Si el usuario no existe en tu DB, tendrás que manejarlo o crear un usuario "dummy"
+            // Aquí asumo que puedes buscar el usuario o dejarlo null si tu Schema lo permite
+            user: req.user ? req.user._id : null, 
+            product: product._id,
+            status: 'approved',
+            deliveryStatus: 'pending', // El CRON se encargará de entregarla
+            rconCommand: command,
+            paymentId: 'MANUAL_' + Date.now()
+        });
+
+        await newOrder.save();
+        res.json({ message: 'Orden manual creada. El Cron Job la entregará en breve.' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error creando orden manual' });
+    }
+});
 module.exports = router;

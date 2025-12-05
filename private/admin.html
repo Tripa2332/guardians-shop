@@ -3,405 +3,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Guardians Shop</title>
+    <title>Admin Dashboard | Guardians Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        card: '#1e293b',
+                        gold: '#fbbf24',
+                        goldHover: '#d97706'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Animación suave para el contenido */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        body { font-family: 'Inter', sans-serif; }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .fade-enter { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar personalizado */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased flex h-screen overflow-hidden">
+<body class="bg-darker text-slate-200 h-screen flex overflow-hidden selection:bg-gold selection:text-black">
 
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[60] flex flex-col gap-2"></div>
 
-    <aside class="w-64 bg-gray-800 border-r border-gray-700 flex-shrink-0 hidden md:flex flex-col">
-        <div class="p-6 flex items-center gap-3 border-b border-gray-700">
-            <div class="bg-yellow-600 p-2 rounded-lg text-white"><i class="ri-shield-star-line text-xl"></i></div>
+    <aside class="w-64 bg-dark border-r border-slate-800 flex-col hidden md:flex relative z-20">
+        <div class="h-20 flex items-center px-8 border-b border-slate-800 gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gold to-orange-600 flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-orange-500/20">
+                <i class="ri-shield-star-fill"></i>
+            </div>
             <div>
-                <h1 class="font-bold text-lg tracking-wide">ADMIN PANEL</h1>
-                <p class="text-xs text-gray-400">Guardians Shop</p>
+                <h1 class="font-bold text-white tracking-tight text-lg">Guardians</h1>
+                <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Panel Admin</span>
             </div>
         </div>
 
-        <nav class="flex-grow p-4 space-y-2">
-            <button onclick="showTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-700 transition-all text-left bg-gray-700 text-yellow-500">
-                <i class="ri-dashboard-line"></i> Resumen
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <p class="px-4 text-xs font-semibold text-slate-500 uppercase mb-2 tracking-wider">Menu Principal</p>
+            
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group bg-gold/10 text-gold border border-gold/20">
+                <i class="ri-dashboard-3-line text-lg"></i>
+                <span class="font-medium">Dashboard</span>
             </button>
-            <button onclick="showTab('products')" id="nav-products" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-700 transition-all text-left text-gray-300">
-                <i class="ri-shopping-bag-3-line"></i> Productos
+
+            <button onclick="switchTab('products')" id="nav-products" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200 group border border-transparent">
+                <i class="ri-shopping-bag-3-line text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium">Productos</span>
             </button>
-            <button onclick="showTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-700 transition-all text-left text-gray-300">
-                <i class="ri-file-list-3-line"></i> Órdenes
+
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200 group border border-transparent">
+                <i class="ri-file-list-3-line text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium">Transacciones</span>
             </button>
         </nav>
 
-        <div class="p-4 border-t border-gray-700">
-            <a href="/" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-                <i class="ri-arrow-left-line"></i> Volver a la Tienda
+        <div class="p-4 border-t border-slate-800">
+            <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all group">
+                <i class="ri-logout-box-r-line"></i>
+                <span class="font-medium">Salir a la Tienda</span>
             </a>
         </div>
     </aside>
 
-    <main class="flex-grow overflow-y-auto h-full bg-gray-900 relative">
-        <div class="md:hidden bg-gray-800 p-4 flex justify-between items-center border-b border-gray-700 sticky top-0 z-10">
-            <span class="font-bold text-yellow-500">Guardians Admin</span>
-            <div class="flex gap-3">
-                <button onclick="showTab('products')" class="p-2 bg-gray-700 rounded"><i class="ri-shopping-bag-line"></i></button>
-                <button onclick="showTab('orders')" class="p-2 bg-gray-700 rounded"><i class="ri-list-unordered"></i></button>
-                <a href="/" class="p-2 bg-gray-700 rounded text-red-400"><i class="ri-logout-box-r-line"></i></a>
-            </div>
-        </div>
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        <header class="md:hidden h-16 bg-dark border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+            <span class="font-bold text-gold">Guardians Admin</span>
+            <button class="p-2 text-slate-300" onclick="alert('Usa una pantalla más grande para mejor experiencia')"><i class="ri-menu-line text-xl"></i></button>
+        </header>
 
-        <div class="p-6 md:p-10 max-w-7xl mx-auto">
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth">
             
-            <div id="tab-dashboard" class="fade-in">
-                <h2 class="text-3xl font-bold mb-6">👋 Bienvenido, Admin</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400 text-sm font-medium">Productos Activos</p>
-                                <h3 class="text-3xl font-bold mt-2 text-white" id="stat-products">0</h3>
+            <div id="tab-dashboard" class="space-y-6 fade-enter max-w-7xl mx-auto">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Resumen General</h2>
+                        <p class="text-slate-400 mt-1">Bienvenido de nuevo. Aquí tienes lo que está pasando hoy.</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm px-3 py-1 bg-green-500/10 text-green-400 rounded-full border border-green-500/20">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        RCON Conectado
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                        <div class="relative z-10">
+                            <p class="text-slate-400 text-sm font-medium mb-1">Productos Activos</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-3xl font-bold text-white" id="stat-products">0</h3>
+                                <span class="text-xs text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full">En catálogo</span>
                             </div>
-                            <div class="bg-blue-900/30 p-3 rounded-lg text-blue-400">
-                                <i class="ri-box-3-line text-xl"></i>
-                            </div>
+                        </div>
+                        <div class="absolute right-6 bottom-6 text-blue-500/20 text-4xl">
+                            <i class="ri-box-3-fill"></i>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400 text-sm font-medium">Ventas Totales</p>
-                                <h3 class="text-3xl font-bold mt-2 text-white" id="stat-sales">0</h3>
+
+                    <div class="glass p-6 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
+                        <div class="relative z-10">
+                            <p class="text-slate-400 text-sm font-medium mb-1">Ventas Totales</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-3xl font-bold text-white" id="stat-sales">0</h3>
+                                <span class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">+12% esta semana</span>
                             </div>
-                            <div class="bg-green-900/30 p-3 rounded-lg text-green-400">
-                                <i class="ri-money-dollar-circle-line text-xl"></i>
-                            </div>
+                        </div>
+                        <div class="absolute right-6 bottom-6 text-green-500/20 text-4xl">
+                            <i class="ri-money-dollar-circle-fill"></i>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400 text-sm font-medium">Entregas Fallidas</p>
-                                <h3 class="text-3xl font-bold mt-2 text-white" id="stat-failed">0</h3>
-                            </div>
-                            <div class="bg-red-900/30 p-3 rounded-lg text-red-400">
-                                <i class="ri-error-warning-line text-xl"></i>
+
+                    <div class="glass p-6 rounded-2xl relative overflow-hidden group border-red-500/20">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-500/10 rounded-full blur-xl group-hover:bg-red-500/20 transition-all"></div>
+                        <div class="relative z-10">
+                            <p class="text-slate-400 text-sm font-medium mb-1">Fallos de Entrega</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-3xl font-bold text-white" id="stat-failed">0</h3>
+                                <span class="text-xs text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full animate-pulse">Requiere Acción</span>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Requieren atención manual</p>
+                        <div class="absolute right-6 bottom-6 text-red-500/20 text-4xl">
+                            <i class="ri-alarm-warning-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass p-6 rounded-2xl border border-slate-800">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="ri-bar-chart-grouped-line text-gold"></i> Ingresos
+                        </h3>
+                        <div class="relative h-64 w-full">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass p-6 rounded-2xl border border-slate-800">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="ri-gift-line text-purple-400"></i> Regalo Manual (RCON)
+                        </h3>
+                        <form id="manualOrderForm" class="space-y-4">
+                            <div>
+                                <label class="text-xs uppercase text-slate-500 font-bold tracking-wider">Steam ID64</label>
+                                <input type="text" id="manualSteamId" placeholder="76561198..." class="w-full mt-1 bg-dark border border-slate-700 rounded-lg px-4 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="text-xs uppercase text-slate-500 font-bold tracking-wider">Producto ID (Mongo)</label>
+                                <input type="text" id="manualProductId" placeholder="64f..." class="w-full mt-1 bg-dark border border-slate-700 rounded-lg px-4 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all">
+                            </div>
+                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20">
+                                <i class="ri-send-plane-fill"></i> Enviar Item
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-products" class="hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">📦 Gestión de Productos</h2>
-                    <button onclick="document.getElementById('productFormContainer').classList.toggle('hidden')" class="bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="ri-add-circle-line"></i> Nuevo Producto
+            <div id="tab-products" class="hidden space-y-6 fade-enter max-w-7xl mx-auto">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white">Inventario</h2>
+                    <button onclick="toggleModal('productModal')" class="bg-gold hover:bg-goldHover text-black font-bold py-2 px-4 rounded-xl flex items-center gap-2 shadow-lg shadow-gold/20 transition-all">
+                        <i class="ri-add-line text-xl"></i> Nuevo Producto
                     </button>
                 </div>
 
-                <div id="productFormContainer" class="hidden bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl mb-8">
-                    <h3 class="text-lg font-semibold mb-4 text-yellow-500 border-b border-gray-700 pb-2">Crear / Editar Producto</h3>
-                    <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Nombre Visible</label>
-                            <input type="text" name="nombre" placeholder="Ej: VIP Gold" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors" required>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">SKU (Identificador único)</label>
-                            <input type="text" name="sku" placeholder="Ej: vip_gold_30d" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors" required>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Precio (ARS)</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-2.5 text-gray-500">$</span>
-                                <input type="number" name="precio" placeholder="1500" class="w-full bg-gray-900 border border-gray-600 p-2.5 pl-7 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors" required>
-                            </div>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Stock (-1 = Infinito)</label>
-                            <input type="number" name="stock" value="-1" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors">
-                        </div>
-                        
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Categoría</label>
-                            <select name="categoria" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors">
-                                <option value="vips">VIPs</option>
-                                <option value="kits">Kits</option>
-                                <option value="dinos">Dinos</option>
-                                <option value="blueprints">Blueprints</option>
-                                <option value="tribelog">Tribe Log</option>
-                            </select>
-                        </div>
-                        
-                        <div class="space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Emoji / Icono</label>
-                            <input type="text" name="emoji" placeholder="👑" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors">
-                        </div>
-
-                        <div class="col-span-1 md:col-span-2 space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold flex items-center gap-2">
-                                Comando RCON <i class="ri-information-line text-blue-400" title="Usa {player} donde iría el nombre del jugador."></i>
-                            </label>
-                            <input type="text" name="rconCommand" placeholder="giveitemnum {player} 1 1 0" class="w-full bg-gray-950 border border-gray-700 p-3 rounded-lg font-mono text-sm text-green-400 focus:border-green-600 focus:outline-none transition-colors" required>
-                            <p class="text-xs text-gray-500">Variable disponible: <code class="text-gray-300">{player}</code> (Nombre del usuario)</p>
-                        </div>
-
-                        <div class="col-span-1 md:col-span-2 space-y-1">
-                            <label class="text-xs text-gray-400 uppercase font-bold">Descripción</label>
-                            <textarea name="descripcion" rows="2" class="w-full bg-gray-900 border border-gray-600 p-2.5 rounded-lg focus:border-yellow-500 focus:outline-none transition-colors"></textarea>
-                        </div>
-                        
-                        <div class="col-span-1 md:col-span-2 flex justify-end gap-3 mt-2">
-                            <button type="button" onclick="document.getElementById('productFormContainer').classList.add('hidden')" class="px-4 py-2 text-gray-400 hover:text-white transition-colors">Cancelar</button>
-                            <button type="submit" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg shadow-lg transform active:scale-95 transition-all">
-                                Guardar Producto
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg">
-                    <table class="w-full text-left text-sm text-gray-400">
-                        <thead class="bg-gray-700 text-gray-200 uppercase font-medium">
+                <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+                    <table class="w-full text-left text-slate-400">
+                        <thead class="bg-darker text-xs uppercase font-semibold tracking-wider text-slate-500 border-b border-slate-800">
                             <tr>
-                                <th class="px-6 py-4">Producto</th>
+                                <th class="px-6 py-4">Item</th>
                                 <th class="px-6 py-4">Categoría</th>
                                 <th class="px-6 py-4">Precio</th>
-                                <th class="px-6 py-4">Stock</th>
+                                <th class="px-6 py-4">Comando</th>
                                 <th class="px-6 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="productsList" class="divide-y divide-gray-700">
-                            <tr><td colspan="5" class="px-6 py-8 text-center"><i class="ri-loader-4-line animate-spin text-2xl"></i> Cargando...</td></tr>
-                        </tbody>
+                        <tbody id="productsList" class="divide-y divide-slate-800/50 text-sm">
+                            </tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="tab-orders" class="hidden fade-in">
-                <h2 class="text-2xl font-bold mb-6">📜 Historial de Ventas</h2>
-                
-                <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-400">
-                            <thead class="bg-gray-700 text-gray-200 uppercase font-medium">
-                                <tr>
-                                    <th class="px-6 py-4">ID Pago</th>
-                                    <th class="px-6 py-4">Usuario</th>
-                                    <th class="px-6 py-4">Producto</th>
-                                    <th class="px-6 py-4">Fecha</th>
-                                    <th class="px-6 py-4 text-center">Estado RCON</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ordersTableBody" class="divide-y divide-gray-700">
-                                <tr><td colspan="5" class="px-6 py-8 text-center">Cargando órdenes...</td></tr>
+            <div id="tab-orders" class="hidden space-y-6 fade-enter max-w-7xl mx-auto">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white">Historial & Logs</h2>
+                    <button onclick="loadLogs()" class="text-slate-400 hover:text-white transition-colors"><i class="ri-refresh-line"></i> Refrescar</button>
+                </div>
+
+                <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+                    <table class="w-full text-left text-slate-400">
+                        <thead class="bg-darker text-xs uppercase font-semibold tracking-wider text-slate-500 border-b border-slate-800">
+                            <tr>
+                                <th class="px-6 py-4">Fecha</th>
+                                <th class="px-6 py-4">Jugador</th>
+                                <th class="px-6 py-4">Producto</th>
+                                <th class="px-6 py-4 text-center">Pago</th>
+                                <th class="px-6 py-4 text-center">Entrega (RCON)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody" class="divide-y divide-slate-800/50 text-sm">
                             </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
 
         </div>
     </main>
 
+    <div id="productModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="toggleModal('productModal')"></div>
+        
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-card border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl transform transition-all scale-100 overflow-hidden flex flex-col max-h-[90vh]">
+                
+                <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-darker">
+                    <h3 class="text-xl font-bold text-white">Configurar Producto</h3>
+                    <button onclick="toggleModal('productModal')" class="text-slate-400 hover:text-white"><i class="ri-close-line text-2xl"></i></button>
+                </div>
+
+                <div class="p-6 overflow-y-auto">
+                    <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Nombre</label>
+                            <input type="text" name="nombre" class="input-style" placeholder="Ej: VIP Gold 30 Días" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">SKU Único</label>
+                            <input type="text" name="sku" class="input-style" placeholder="vip_gold_30" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Precio</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-500">$</span>
+                                <input type="number" name="precio" class="input-style pl-8" placeholder="1500" required>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Categoría</label>
+                            <select name="categoria" class="input-style">
+                                <option value="vips">👑 Membresías VIP</option>
+                                <option value="kits">🎒 Kits de Inicio</option>
+                                <option value="dinos">🦖 Dinos</option>
+                                <option value="blueprints">📜 Planos (BP)</option>
+                                <option value="tribelog">📜 Tribe Log</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Comando RCON</label>
+                            <div class="relative">
+                                <input type="text" name="rconCommand" class="input-style font-mono text-green-400 pl-10" placeholder="giveitemnum {player} 1 1 0" required>
+                                <i class="ri-terminal-box-line absolute left-3 top-2.5 text-slate-500"></i>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Usa <code class="text-gold">{player}</code> como placeholder para el nombre del usuario.</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Emoji</label>
+                            <input type="text" name="emoji" class="input-style" placeholder="📦">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Stock</label>
+                            <input type="number" name="stock" value="-1" class="input-style" placeholder="-1 es infinito">
+                        </div>
+                        
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="text-xs uppercase text-slate-500 font-bold">Descripción</label>
+                            <textarea name="descripcion" rows="3" class="input-style resize-none"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="p-6 border-t border-slate-700 bg-darker flex justify-end gap-3">
+                    <button onclick="toggleModal('productModal')" class="px-4 py-2 text-slate-400 hover:text-white font-medium transition-colors">Cancelar</button>
+                    <button onclick="document.getElementById('addProductForm').dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}))" class="bg-gold hover:bg-goldHover text-black font-bold py-2 px-6 rounded-lg shadow-lg shadow-gold/20 transition-all">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Utility class for inputs */
+        .input-style {
+            width: 100%;
+            background-color: #0f172a; /* bg-dark */
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.625rem 1rem;
+            color: white;
+            transition: all 0.2s;
+        }
+        .input-style:focus {
+            border-color: #fbbf24; /* gold */
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+        }
+    </style>
+
     <script>
-        // --- UTILITIES: TOAST NOTIFICATIONS ---
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const colors = type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-blue-600');
-            const icon = type === 'success' ? 'ri-checkbox-circle-line' : (type === 'error' ? 'ri-error-warning-line' : 'ri-information-line');
-
-            toast.className = `${colors} text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 min-w-[300px] transform transition-all duration-500 translate-x-full opacity-0`;
-            toast.innerHTML = `<i class="${icon} text-xl"></i> <span class="font-medium">${message}</span>`;
-
-            container.appendChild(toast);
-
-            // Animate in
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-x-full', 'opacity-0');
+        // --- UI UTILS ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            ['dashboard', 'products', 'orders'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${id}`);
+                // Reset Nav Styles
+                nav.className = `nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200 group border border-transparent`;
             });
 
-            // Remove after 3s
+            // Show active
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            activeNav.className = `nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gold/10 text-gold border border-gold/20 transition-all duration-200 group`;
+
+            // Load data logic
+            if(tabId === 'dashboard') { loadChart(); loadOrders(); }
+            if(tabId === 'products') loadProducts();
+            if(tabId === 'orders') loadOrders();
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Simple enter animation logic if desired
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const colors = type === 'success' ? 'border-green-500 bg-green-900/90' : 'border-red-500 bg-red-900/90';
+            const icon = type === 'success' ? 'ri-check-double-line' : 'ri-error-warning-line';
+            
+            el.className = `flex items-center gap-3 px-4 py-3 rounded-lg text-white shadow-xl border-l-4 ${colors} backdrop-blur-sm transition-all transform translate-x-full opacity-0`;
+            el.innerHTML = `<i class="${icon}"></i> <span class="font-medium text-sm">${msg}</span>`;
+            
+            container.appendChild(el);
+            
+            // Animate in
+            setTimeout(() => el.classList.remove('translate-x-full', 'opacity-0'), 10);
+            // Remove
             setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0');
-                setTimeout(() => toast.remove(), 500);
+                el.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => el.remove(), 300);
             }, 3000);
         }
 
-        // --- DATA LOADING ---
-
+        // --- DATA LOGIC ---
+        
+        // 1. Load Products
         async function loadProducts() {
+            const list = document.getElementById('productsList');
+            list.innerHTML = '<tr><td colspan="5" class="text-center py-10"><i class="ri-loader-4-line animate-spin text-3xl text-gold"></i></td></tr>';
+
             try {
                 const res = await fetch('/api/products');
                 const data = await res.json();
-                const allProducts = [...data.vips, ...data.kits, ...data.dinos, ...data.blueprints, ...data.tribelog];
-                
-                const tbody = document.getElementById('productsList');
-                document.getElementById('stat-products').innerText = allProducts.length;
+                // Combine categories for admin view
+                const all = [...data.vips, ...data.kits, ...data.dinos, ...data.blueprints, ...data.tribelog];
+                document.getElementById('stat-products').innerText = all.length;
 
-                tbody.innerHTML = allProducts.map(p => `
-                    <tr class="hover:bg-gray-750 transition-colors group">
-                        <td class="px-6 py-4 font-medium text-white flex items-center gap-3">
-                            <span class="text-2xl">${p.emoji || '📦'}</span>
-                            <div>
-                                <div>${p.nombre}</div>
-                                <div class="text-xs text-gray-500 font-mono">${p.sku}</div>
+                if(all.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500">No hay productos creados.</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = all.map(p => `
+                    <tr class="group hover:bg-slate-800/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center text-xl">${p.emoji || '📦'}</div>
+                                <div>
+                                    <div class="font-medium text-white group-hover:text-gold transition-colors">${p.nombre}</div>
+                                    <div class="text-xs font-mono text-slate-500">${p.sku}</div>
+                                </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="bg-gray-700 px-2 py-1 rounded text-xs uppercase tracking-wider">${p.category}</span>
-                        </td>
-                        <td class="px-6 py-4 text-green-400 font-bold">$${p.precio}</td>
-                        <td class="px-6 py-4">
-                            ${p.stock === -1 ? '<span class="text-blue-400">∞ Infinito</span>' : (p.stock > 0 ? p.stock : '<span class="text-red-500">Agotado</span>')}
-                        </td>
+                        <td class="px-6 py-4"><span class="bg-slate-800 border border-slate-700 px-2 py-1 rounded text-xs text-slate-300 uppercase">${p.category}</span></td>
+                        <td class="px-6 py-4 font-medium text-emerald-400">$${p.precio}</td>
+                        <td class="px-6 py-4"><div class="max-w-[200px] truncate font-mono text-xs text-slate-500" title="${p.rconCommand}">${p.rconCommand}</div></td>
                         <td class="px-6 py-4 text-right">
-                            <button onclick="deleteProduct('${p._id}')" class="text-gray-500 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-900/20" title="Eliminar">
-                                <i class="ri-delete-bin-line text-lg"></i>
-                            </button>
+                            <button onclick="deleteProduct('${p._id}')" class="text-slate-500 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-all"><i class="ri-delete-bin-line"></i></button>
                         </td>
                     </tr>
                 `).join('');
-            } catch (e) {
+            } catch(e) {
                 console.error(e);
                 showToast('Error cargando productos', 'error');
             }
         }
 
-        async function loadOrders() {
-            try {
-                const res = await fetch('/api/admin/orders');
-                if (!res.ok) return; 
-                const orders = await res.json();
-
-                document.getElementById('stat-sales').innerText = orders.length;
-                document.getElementById('stat-failed').innerText = orders.filter(o => o.deliveryStatus === 'failed').length;
-
-                const tbody = document.getElementById('ordersTableBody');
-                tbody.innerHTML = orders.map(o => {
-                    const date = new Date(o.createdAt).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                    
-                    let statusBadge = '';
-                    if(o.deliveryStatus === 'delivered') statusBadge = '<span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs border border-green-700 flex w-fit mx-auto items-center gap-1"><i class="ri-check-line"></i> Entregado</span>';
-                    else if(o.deliveryStatus === 'failed') statusBadge = '<span class="bg-red-900 text-red-300 px-2 py-1 rounded-full text-xs border border-red-700 flex w-fit mx-auto items-center gap-1"><i class="ri-close-line"></i> Error</span>';
-                    else statusBadge = '<span class="bg-yellow-900 text-yellow-300 px-2 py-1 rounded-full text-xs border border-yellow-700 flex w-fit mx-auto items-center gap-1"><i class="ri-loader-4-line animate-spin"></i> Pendiente</span>';
-
-                    return `
-                    <tr class="hover:bg-gray-750">
-                        <td class="px-6 py-4 font-mono text-xs text-gray-500">${o.paymentId}</td>
-                        <td class="px-6 py-4 font-medium text-white">${o.user ? o.user.displayName : 'Desconocido'}</td>
-                        <td class="px-6 py-4">${o.productName || o.item}</td>
-                        <td class="px-6 py-4 text-xs">${date}</td>
-                        <td class="px-6 py-4 text-center">${statusBadge}</td>
-                    </tr>
-                `}).join('');
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        // --- ACTIONS ---
-
+        // 2. Add Product
         document.getElementById('addProductForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
-            // Loading state
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.innerText = "Guardando...";
-            btn.disabled = true;
-
             try {
-                const res = await fetch('/api/admin/products', {
+                const res = await fetch('/api/admin/products', { // Asegúrate de crear esta ruta en backend si no existe, o usar la existente
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                if (res.ok) {
-                    showToast('¡Producto guardado correctamente!');
+                if(res.ok) {
+                    showToast('Producto creado con éxito');
                     e.target.reset();
-                    document.getElementById('productFormContainer').classList.add('hidden');
+                    toggleModal('productModal');
                     loadProducts();
                 } else {
                     const err = await res.json();
-                    showToast(err.message || 'Error al guardar', 'error');
+                    showToast(err.message || 'Error al crear', 'error');
                 }
-            } catch (error) {
-                showToast('Error de conexión', 'error');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+            } catch(e) { showToast('Error de conexión', 'error'); }
         });
 
+        // 3. Delete Product
         async function deleteProduct(id) {
-            if(!confirm('¿Estás seguro de eliminar este producto? No se puede deshacer.')) return;
-            
+            if(!confirm("¿Seguro que deseas borrar este item?")) return;
             try {
                 const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    showToast('Producto eliminado', 'success');
+                if(res.ok) {
+                    showToast('Producto eliminado');
                     loadProducts();
                 } else {
                     showToast('No se pudo eliminar', 'error');
                 }
-            } catch (e) {
-                showToast('Error al conectar con el servidor', 'error');
-            }
+            } catch(e) { console.error(e); }
         }
 
-        // --- NAVIGATION LOGIC ---
+        // 4. Load Orders/Logs
+        async function loadLogs() {
+            const tbody = document.getElementById('ordersTableBody');
+            try {
+                const res = await fetch('/api/admin/rcon-logs');
+                const logs = await res.json();
 
-        function showTab(tabName) {
-            // Hide all tabs
-            ['dashboard', 'products', 'orders'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                // Update nav styles
-                const navBtn = document.getElementById(`nav-${t}`);
-                if (navBtn) {
-                    if (t === tabName) {
-                        navBtn.classList.remove('text-gray-300', 'bg-transparent');
-                        navBtn.classList.add('bg-gray-700', 'text-yellow-500');
-                    } else {
-                        navBtn.classList.add('text-gray-300');
-                        navBtn.classList.remove('bg-gray-700', 'text-yellow-500');
+                // Update Dashboard Stats
+                document.getElementById('stat-sales').innerText = logs.filter(l => l.status === 'approved').length;
+                const failed = logs.filter(l => l.deliveryStatus === 'failed').length;
+                document.getElementById('stat-failed').innerText = failed;
+
+                tbody.innerHTML = logs.map(log => {
+                    const date = new Date(log.createdAt).toLocaleDateString('es-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+                    
+                    let payBadge = log.status === 'approved' 
+                        ? `<span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20">PAGADO</span>`
+                        : `<span class="text-xs font-bold text-red-400 bg-red-400/10 px-2 py-1 rounded border border-red-400/20">${log.status.toUpperCase()}</span>`;
+
+                    let rconBadge = '';
+                    if(log.deliveryStatus === 'delivered') rconBadge = `<span class="flex items-center justify-center gap-1 text-xs font-bold text-blue-400"><i class="ri-checkbox-circle-fill"></i> Entregado</span>`;
+                    else if(log.deliveryStatus === 'failed') rconBadge = `<span class="flex items-center justify-center gap-1 text-xs font-bold text-red-500 animate-pulse"><i class="ri-error-warning-fill"></i> Error</span>`;
+                    else rconBadge = `<span class="flex items-center justify-center gap-1 text-xs font-bold text-yellow-500"><i class="ri-loader-4-line animate-spin"></i> Pendiente</span>`;
+
+                    return `
+                        <tr class="hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 last:border-0">
+                            <td class="px-6 py-4 text-slate-500 font-mono text-xs">${date}</td>
+                            <td class="px-6 py-4 text-white font-medium">${log.user ? log.user.username : 'N/A'} <br><span class="text-xs text-slate-600">${log.user?.steamId || ''}</span></td>
+                            <td class="px-6 py-4 text-slate-300">${log.product ? log.product.name : 'Item borrado'}</td>
+                            <td class="px-6 py-4 text-center">${payBadge}</td>
+                            <td class="px-6 py-4 text-center">${rconBadge}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch(e) { console.error(e); }
+        }
+
+        // 5. Chart
+        async function loadChart() {
+            try {
+                const res = await fetch('/api/admin/sales-chart');
+                const data = await res.json();
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                
+                // Gradient styling
+                let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(251, 191, 36, 0.2)'); // Gold
+                gradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
+
+                if(window.myChart) window.myChart.destroy();
+
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => d._id),
+                        datasets: [{
+                            label: 'Ingresos Diarios',
+                            data: data.map(d => d.total),
+                            borderColor: '#fbbf24',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#fff',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        }
                     }
-                }
-            });
-
-            // Show selected tab
-            const selected = document.getElementById(`tab-${tabName}`);
-            selected.classList.remove('hidden');
-            
-            // Reload data if necessary
-            if (tabName === 'products') loadProducts();
-            if (tabName === 'orders') loadOrders();
+                });
+            } catch(e) {}
         }
 
-        // Init
-        loadProducts();
-        loadOrders();
+        // 6. Manual Order Handler
+        document.getElementById('manualOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const steamId = document.getElementById('manualSteamId').value;
+            const productId = document.getElementById('manualProductId').value;
+            
+            if(!confirm(`¿Enviar ${productId} a ${steamId}?`)) return;
+
+            try {
+                const res = await fetch('/api/admin/manual-order', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ steamId, productId })
+                });
+                const ans = await res.json();
+                if(res.ok) showToast('Comando enviado al Cron');
+                else showToast(ans.error, 'error');
+                loadLogs(); // Refresh logs immediately
+            } catch(e) { showToast('Error de conexión', 'error'); }
+        });
+
+        // Initial Load
+        switchTab('dashboard');
     </script>
 </body>
 </html>
