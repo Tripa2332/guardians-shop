@@ -10,12 +10,311 @@
     <link href="../assets/css/output.css" rel="stylesheet">
     
     <link rel="stylesheet" href="../assets/css/navbar-styles.css">
+    <script src="../assets/js/animated-background.js"></script>
+    
+    <style>
+        /* Sección Características */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(28, 28, 28, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 30px rgba(255, 215, 0, 0.05);
+            transform: translateY(-10px);
+        }
+
+        .feature-card:hover::before {
+            top: -25%;
+            right: -25%;
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(10deg);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #F2E8C4;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .feature-link:hover {
+            gap: 1rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* FAQ Section */
+        .faq-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: linear-gradient(135deg, rgba(28, 28, 28, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+        }
+
+        .faq-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover .faq-header {
+            background: rgba(255, 215, 0, 0.08);
+        }
+
+        .faq-title {
+            color: #F2E8C4;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .faq-icon {
+            color: #FFD700;
+            transition: transform 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 1.5rem;
+        }
+
+        .faq-item.active .faq-content {
+            max-height: 300px;
+            padding: 1.5rem;
+        }
+
+        .faq-text {
+            color: #d1d5db;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(5, 128, 255, 0.15) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F2E8C4;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .cta-title span {
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .cta-description {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .cta-btn-primary {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #0a0a0a;
+        }
+
+        .cta-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .cta-btn-secondary {
+            background: transparent;
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Sección Title */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F2E8C4;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title span {
+            color: #FFD700;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700 0%, transparent 100%);
+            border-radius: 2px;
+        }
+    </style>
 </head>
 <body class="bg-guardian-dark text-gray-200 font-ark">
     <!-- Contenedor para la navbar -->
     <nav id="navbar-container"></nav>
 
-    <!-- El resto de tu contenido... -->
+    <!-- HERO SECTION -->
     <div class="relative h-screen flex items-center justify-center overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
         
@@ -34,93 +333,421 @@
             </p>
             
            <div class="flex flex-col sm:flex-row justify-center gap-4 font-bold uppercase tracking-wider">
-    <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3516929529" class="bg-guardian-gold text-guardian-dark py-4 px-10 rounded hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300 flex items-center justify-center gap-3">
-        <i class="fab fa-steam text-xl"></i> Modpack
-    </a>
-    <a href="https://discord.gg/2rUgsMMT7G" class="border-2 border-guardian-gold text-guardian-cream py-4 px-10 rounded hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold transition duration-300 flex items-center justify-center">
-        <i class="fab fa-discord mr-3 text-xl"></i> Unirse a Discord
-    </a>
-</div>
+                <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3516929529" class="bg-guardian-gold text-guardian-dark py-4 px-10 rounded hover:bg-guardian-bronze hover:shadow-neon-gold transition duration-300 flex items-center justify-center gap-3">
+                    <i class="fab fa-steam text-xl"></i> Modpack
+                </a>
+                <a href="https://discord.gg/2rUgsMMT7G" class="border-2 border-guardian-gold text-guardian-cream py-4 px-10 rounded hover:bg-guardian-gold hover:text-guardian-dark hover:shadow-neon-gold transition duration-300 flex items-center justify-center">
+                    <i class="fab fa-discord mr-3 text-xl"></i> Unirse a Discord
+                </a>
+            </div>
         </div>
     </div>
 
-    <section id="categorias" class="py-24 relative overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <!-- CARACTERÍSTICAS PRINCIPALES -->
+    <section class="py-24 relative overflow-hidden bg-gradient-to-b from-guardian-dark to-black">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-guardian-gold opacity-5 blur-[150px] rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="section-title">
+                    Características <span>Principales</span>
+                </h2>
+            </div>
+
+            <div class="feature-grid">
+                <!-- Servidores IPs -->
+                <a href="../pages/ip.html" class="feature-card group" style="text-decoration: none; color: inherit;">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="feature-card h3">Servidores IPs</h3>
+                    <p>Conecta a múltiples mapas con la mejor infraestructura y ping estable.</p>
+                    <span class="feature-link">
+                        Ver IPs <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <!-- Ranking -->
+                <a href="../pages/ranking.html" class="feature-card group" style="text-decoration: none; color: inherit;">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="feature-card h3">Ranking Global</h3>
+                    <p>Compite por los primeros lugares y demuestra tu dominio en el servidor.</p>
+                    <span class="feature-link">
+                        Ver Ranking <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <!-- Shop VIP -->
+                <a href="../pages/vip.html" class="feature-card group" style="text-decoration: none; color: inherit;">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="feature-card h3">Shop VIP</h3>
+                    <p>Acceso a rangos exclusivos, kits especiales y beneficios premium.</p>
+                    <span class="feature-link">
+                        Explorar Shop <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <!-- Información -->
+                <a href="../pages/info.html" class="feature-card group" style="text-decoration: none; color: inherit;">
+                    <div class="feature-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3 class="feature-card h3">Info & Reglas</h3>
+                    <p>Conoce todas las reglas, características y FAQ del servidor.</p>
+                    <span class="feature-link">
+                        Leer Más <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ RÁPIDA -->
+    <section class="py-24 relative overflow-hidden" style="background-image: url('../assets/img/fondo.png'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="absolute inset-0 z-0 bg-guardian-dark/85"></div>
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-guardian-gold opacity-5 blur-[150px] rounded-full"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
-                 <h2 class="text-4xl font-bold uppercase tracking-wider text-guardian-cream inline-block relative">
-                    <span class="text-guardian-gold">Explorar</span> Categorías
-                    <div class="absolute w-1/2 h-1 bg-guardian-gold bottom-0 left-1/4 translate-y-4"></div>
-                 </h2>
+                <h2 class="section-title">
+                    Preguntas <span>Frecuentes</span>
+                </h2>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <a href="../pages/vip.html" class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
-                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3 text-guardian-cream group-hover:text-guardian-gold transition">Rangos VIP</h3>
-                    <p class="text-gray-400">Beneficios exclusivos, kits diarios y estatus en el servidor.</p>
-                </a>
 
-                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
-                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
-                        <i class="fas fa-shield-alt"></i></div>
-                    <h3 class="text-2xl font-bold mb-3 text-guardian-cream group-hover:text-guardian-gold transition">Kits de Inicio</h3>
-                    <p class="text-gray-400">Empieza fuerte con armaduras, armas y recursos esenciales.</p>
+            <div class="faq-container">
+                <!-- FAQ 1 -->
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFAQ(this)">
+                        <h3 class="faq-title">¿Cómo me uno al servidor?</h3>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-text">Descarga el modpack desde Steam, copia la IP de uno de nuestros servidores e ingresa en ARK. En la sección de IPs encontrarás todos los servidores disponibles con sus detalles.</p>
+                    </div>
                 </div>
 
-                <div class="glass-panel p-8 rounded-xl text-center cursor-pointer group">
-                    <div class="text-guardian-gold text-6xl mb-6 group-hover:scale-110 transition duration-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
-                        <i class="fas fa-dna"></i>
+                <!-- FAQ 2 -->
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFAQ(this)">
+                        <h3 class="faq-title">¿Qué es un rango VIP?</h3>
+                        <i class="fas fa-chevron-down faq-icon"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-3 text-guardian-cream group-hover:text-guardian-gold transition">Genética</h3>
-                    <p class="text-gray-400">Dinos con estadísticas perfectas listos para la batalla.</p>
+                    <div class="faq-content">
+                        <p class="faq-text">Los rangos VIP son membresías que ofrecen beneficios exclusivos como kits diarios, acceso anticipado a nuevas características y estatus especial en el servidor. Puedes verlos todos en nuestra sección de Shop.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFAQ(this)">
+                        <h3 class="faq-title">¿Hay wipes regularmente?</h3>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-text">Sí, realizamos wipes cada cierto tiempo para mantener el servidor fresco y competitivo. Puedes ver el historial de todos los wipes en la sección de Ranking con sus fechas exactas.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFAQ(this)">
+                        <h3 class="faq-title">¿Cómo reporto un jugador o un problema?</h3>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-text">Puedes reportar problemas directamente en nuestro Discord. Tenemos un canal dedicado a reportes donde nuestro equipo de moderadores responde en las próximas 24 horas.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFAQ(this)">
+                        <h3 class="faq-title">¿Hay soporte para jugadores nuevos?</h3>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-text">¡Claro! Tenemos guías completas, tutoriales en video y una comunidad amigable que ayuda a jugadores nuevos. También puedes unirte a nuestro Discord para obtener ayuda directa de moderadores.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+<!-- VIDEOS DE YOUTUBE - CARRUSEL COMPACTO RESPONSIVO -->
+<section class="py-16 relative overflow-hidden bg-gradient-to-b from-guardian-dark to-black">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 bg-guardian-gold opacity-5 blur-[150px] rounded-full"></div>
 
-    <section id="destacados" class="py-24 bg-gradient-to-b from-guardian-dark to-black relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-             <div class="text-center mb-16">
-                 <h2 class="text-4xl font-bold uppercase tracking-wider text-guardian-cream">
-                    Destacados del <span class="text-guardian-gold">Mercado</span>
-                 </h2>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-8">
+            <h2 class="section-title">
+                Vídeos de la <span>Comunidad</span>
+            </h2>
+        </div>
+
+        <div class="carousel-container">
+            <div class="carousel-wrapper" id="videoCarousel">
+                <!-- Video repetido 6 veces para seamless loop -->
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-separator"></div>
+
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-separator"></div>
+
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-separator"></div>
+
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-separator"></div>
+
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-separator"></div>
+
+                <div class="carousel-item">
+                    <div class="video-card">
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video" class="video-image">
+                        <div class="video-overlay">
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="play-button">
+                                <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="video-title">
+                            <h3>Epic ARK Adventure</h3>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                
-                <div class="bg-guardian-panel rounded-xl overflow-hidden border border-yellow-900/50 hover:border-guardian-gold hover:shadow-neon-gold transition-all duration-500 group">
-                    <div class="relative">
-                         <img src="https://via.placeholder.com/300x200/1C1C1C/FFD700?text=Pack+Guardián" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
-                        <div class="absolute top-0 right-0 bg-guardian-gold text-guardian-dark text-xs font-bold px-3 py-1 uppercase rounded-bl-lg">
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 text-guardian-cream group-hover:text-guardian-gold transition">Pack Guardián Supremo</h3>
-                        <ul class="text-sm text-gray-400 mb-6 space-y-2">
-                        </ul>
-                        <div class="flex justify-between items-center">
-                        </div>
+    <style>
+        .carousel-container {
+            overflow: hidden;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .carousel-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            animation: slideCarousel 30s linear infinite;
+            width: fit-content;
+            padding: 0.5rem;
+        }
+
+        .carousel-item {
+            flex-shrink: 0;
+            width: clamp(280px, 100%, 384px);
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+
+        .video-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            group: contents;
+        }
+
+        .video-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item:hover .video-image {
+            transform: scale(1.1);
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .carousel-item:hover .video-overlay {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .play-button {
+            width: 64px;
+            height: 64px;
+            background: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #0a0a0a;
+            font-size: 1.25rem;
+        }
+
+        .carousel-item:hover .play-button {
+            transform: scale(1.25);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .video-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 1rem;
+            padding-top: 2rem;
+        }
+
+        .video-title h3 {
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .carousel-separator {
+            flex-shrink: 0;
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 215, 0, 0.3);
+            aspect-ratio: auto;
+        }
+
+        @keyframes slideCarousel {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-100% / 6));
+            }
+        }
+
+        .carousel-wrapper:hover {
+            animation-play-state: paused;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .carousel-item {
+                width: clamp(200px, 90vw, 320px);
+            }
+
+            .carousel-wrapper {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .carousel-item {
+                width: clamp(160px, 85vw, 280px);
+            }
+
+            .carousel-wrapper {
+                gap: 0.75rem;
+            }
+
+            .play-button {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</section>
+    <!-- CALL-TO-ACTION -->
+    <section class="py-24 relative overflow-hidden bg-gradient-to-b from-black to-guardian-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="cta-section">
+                <div class="cta-content">
+                    <h2 class="cta-title">
+                        ¿Listo para <span>Dominar</span> el ARK?
+                    </h2>
+                    <p class="cta-description">
+                        Únete a miles de jugadores en The Guardians. Compite, colabora y conviértete en una leyenda del servidor.
+                    </p>
+                    
+                    <div class="cta-buttons">
+                        <a href="https://discord.gg/2rUgsMMT7G" class="cta-btn cta-btn-primary">
+                            <i class="fab fa-discord"></i> Unirse Ahora
+                        </a>
+                        <a href="../pages/ip.html" class="cta-btn cta-btn-secondary">
+                            <i class="fas fa-network-wired"></i> Ver Servidores
+                        </a>
                     </div>
                 </div>
-                
-                <div class="bg-guardian-panel rounded-xl overflow-hidden border border-yellow-900/50 hover:border-guardian-gold hover:shadow-neon-gold transition-all duration-500 group">
-                    <div class="relative">
-                        <img src="https://imgur.com/gallery/palomitas-NgfgvAh#zoNFch8" alt="Producto" class="w-full h-52 object-cover group-hover:scale-105 transition duration-700">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 text-guardian-cream group-hover:text-guardian-gold transition">Kit PvP Avanzado</h3>
-                        <ul class="text-sm text-gray-400 mb-6 space-y-2">
-                        </ul>
-                        <div class="flex justify-between items-center">
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
@@ -130,6 +757,8 @@
 <script src="../assets/js/load-navbar.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        new AnimatedBackground('body');
+
         // Leer cookie de userData si existe
         function getCookie(name) {
             const nameEQ = name + "=";
@@ -158,6 +787,22 @@
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;
             });
+    }
+
+    // Toggle FAQ
+    function toggleFAQ(header) {
+        const faqItem = header.parentElement;
+        const wasActive = faqItem.classList.contains('active');
+        
+        // Cerrar todos los FAQ
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Abrir el seleccionado si no estaba activo
+        if (!wasActive) {
+            faqItem.classList.add('active');
+        }
     }
 </script>
 </body>
