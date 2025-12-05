@@ -5,15 +5,33 @@ const passport = require('passport');
 const SteamStrategy = require('passport-steam').Strategy;
 const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
+const mongoose = require('mongoose');
+// Corrección para importar MongoStore en diferentes versiones
+const MongoStore = require('connect-mongo').default || require('connect-mongo');
 
-// Integraciones
+// Modelos
+const User = require('./models/User');
+
+// Integraciones externas
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { Rcon } = require('rcon-client');
-
-// Importar las rutas de autenticación (NUEVO)
 const authRoutes = require('./routes/auth');
 
 const app = express();
+
+// --- CONFIGURACIÓN DE URL BASE ---
+// Si no hay BASE_URL en el .env, usa localhost por defecto
+const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+console.log(`🌍 Base URL configurada en: ${baseUrl}`);
+
+// --- CONEXIÓN BASE DE DATOS ---
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/guardians-shop';
+
+mongoose.connect(mongoUri)
+    .then(() => console.log('✅ Base de datos MongoDB conectada'))
+    .catch(err => {
+        console.error('❌ Error conectando a BD:', err.message);
+    });
 
 // Configuración Mercado Pago
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
@@ -29,48 +47,103 @@ const rconConfig = {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Sesiones (Usando variable de entorno para el secreto)
+// Sesiones
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secreto_por_defecto_inseguro', 
+    secret: process.env.SESSION_SECRET || 'secreto_temporal',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: mongoUri }),
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 semana
+    }
 }));
 
 // Inicializar Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((obj, done) => done(null, obj));
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
 
-// --- ESTRATEGIAS PASSPORT ---
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (err) {
+        done(err, null);
+    }
+});
+
+// --- ESTRATEGIA STEAM ---
 passport.use(new SteamStrategy({
-    returnURL: `http://localhost:3000/auth/steam/return`,
-    realm: `http://localhost:3000/`,
+    returnURL: `${baseUrl}/auth/steam/return`,
+    realm: `${baseUrl}/`,
     apiKey: process.env.STEAM_API_KEY
   },
-  (identifier, profile, done) => done(null, profile)
+  async (identifier, profile, done) => {
+    try {
+        let user = await User.findOne({ steamId: profile.id });
+        if (!user) {
+            user = await User.create({
+                steamId: profile.id,
+                displayName: profile.displayName,
+                avatar: profile.photos[2].value
+            });
+            console.log("¡Usuario Steam nuevo creado!");
+        } else {
+            user.displayName = profile.displayName;
+            user.avatar = profile.photos[2].value;
+            await user.save();
+        }
+        return done(null, user);
+    } catch (error) {
+        return done(error, null);
+    }
+  }
 ));
 
+// --- ESTRATEGIA DISCORD ---
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `http://localhost:3000/auth/discord/return`,
+    callbackURL: `${baseUrl}/auth/discord/return`, 
     scope: ['identify', 'email']
   },
-  (accessToken, refreshToken, profile, done) => done(null, profile)
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+        let user = await User.findOne({ discordId: profile.id });
+        const avatarUrl = profile.avatar 
+            ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` 
+            : null;
+
+        if (!user) {
+            console.log("Creando nuevo usuario de Discord...");
+            user = await User.create({
+                discordId: profile.id,
+                displayName: profile.username || profile.global_name,
+                email: profile.email,
+                avatar: avatarUrl,
+                provider: 'discord'
+            });
+        } else {
+            user.displayName = profile.username || profile.global_name;
+            if(avatarUrl) user.avatar = avatarUrl;
+            await user.save();
+        }
+        return done(null, user);
+    } catch (err) {
+        console.error("Error en estrategia Discord:", err);
+        return done(err, null);
+    }
+  }
 ));
 
-// --- USAR RUTAS ---
-
-// 1. Archivos estáticos
+// --- RUTAS ---
 app.use(express.static(path.join(__dirname, 'public')));
-
-// 2. Rutas de Autenticación (Conecta con routes/auth.js)
-// Esto crea automáticamente rutas como /auth/steam, /auth/discord, etc.
 app.use('/auth', authRoutes);
 
-// 3. Rutas de Mercado Pago
+// Mercado Pago
 app.post('/crear-orden', async (req, res) => {
     try {
         const { title, price, quantity, userId, itemId } = req.body;
@@ -81,13 +154,12 @@ app.post('/crear-orden', async (req, res) => {
             body: {
                 items: [{ title, unit_price: Number(price), quantity: Number(quantity), currency_id: 'ARS' }],
                 metadata: { player_id: userId, item_id: itemId },
-                // URLs dinámicas
                 back_urls: {
-                    success: `${process.env.BASE_URL}./pages/exito.html`,
-                    failure: `${process.env.BASE_URL}./pages/fallo.html`,
-                    pending: `${process.env.BASE_URL}./pages/pendiente.html`
+                    success: `${baseUrl}/pages/exito.html`,
+                    failure: `${baseUrl}/pages/fallo.html`,
+                    pending: `${baseUrl}/pages/pendiente.html`
                 },
-                notification_url: `${process.env.WEBHOOK_URL}/webhook` // Usar variable distinta para webhook si usas ngrok
+                notification_url: `${process.env.WEBHOOK_URL}/webhook`
             }
         });
         res.json({ id: result.id, init_point: result.init_point });
@@ -119,7 +191,7 @@ app.post('/webhook', async (req, res) => {
     res.sendStatus(200);
 });
 
-// Función RCON mejorada con manejo de errores
+// Función RCON
 async function entregarItemEnJuego(player, item) {
     try {
         const rcon = await Rcon.connect(rconConfig);
@@ -128,11 +200,11 @@ async function entregarItemEnJuego(player, item) {
         console.log("🎮 RCON Res:", response);
         await rcon.end();
     } catch (error) {
-        console.error("⚠️ Fallo RCON (El servidor puede estar offline):", error.message);
+        console.error("⚠️ Fallo RCON:", error.message);
     }
 }
 
-// Rutas API y Logout
+// Rutas auxiliares
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
@@ -143,7 +215,7 @@ app.get('/logout', (req, res, next) => {
 app.get('/api/user', (req, res) => {
     res.json(req.user ? {
         name: req.user.displayName || req.user.username,
-        avatar: req.user.photos?.[0]?.value || null,
+        avatar: req.user.avatar || req.user.photos?.[0]?.value,
         id: req.user.id,
         provider: req.user.provider
     } : null);
@@ -155,6 +227,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages', 'index.html'));
 });
 
+// Iniciar servidor
 app.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000');
+    console.log(`Servidor corriendo en ${baseUrl}`);
 });

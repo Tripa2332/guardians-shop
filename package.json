@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "connect-mongo": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "mercadopago": "^2.11.0",
+    "mongoose": "^9.0.0",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
     "passport-steam": "^1.0.18",
@@ -16,7 +18,8 @@
   "description": "proyecto con tragon",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "node --watch app.js"
   },
   "repository": {
     "type": "git",
@@ -35,10 +38,5 @@
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17"
-  },
-  "scripts":
-   {
-  "start": "node app.js",
-  "dev": "node --watch app.js" 
   }
 }
