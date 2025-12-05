@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-
+const { check, validationResult } = require('express-validator');
 // ---------------------------------------
 // RUTA STEAM
 // ---------------------------------------
@@ -65,5 +65,32 @@ router.get('/discord/return',
     }
   }
 );
+// 2. Modificar la ruta de registro
+router.post('/register', [
+    // Validaciones (Middlewares)
+    check('username', 'El usuario es obligatorio').not().isEmpty().trim().escape(),
+    check('email', 'Agrega un email válido').isEmail().normalizeEmail(),
+    check('password', 'La contraseña debe tener al menos 6 caracteres').isLength({ min: 6 }),
+    check('steamId', 'El SteamID es obligatorio').not().isEmpty().trim().escape()
+], async (req, res) => {
 
+    // 3. Revisar si hubo errores
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        // Si hay errores, retornamos 400 y la lista de errores
+        // O renderizamos la vista 'register' mostrando los errores
+        return res.render('register', { errors: errors.array() }); 
+    }
+
+    // Si pasa la validación, continúa tu lógica normal de registro...
+    const { username, email, password, steamId } = req.body;
+    
+    try {
+        // Tu lógica existente de crear usuario...
+        // ...
+    } catch (error) {
+        console.error(error);
+        res.render('register', { error: 'Error al registrar usuario' });
+    }
+});
 module.exports = router;

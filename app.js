@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo').default || require('connect-mongo');
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { Rcon } = require('rcon-client');
-
+const startOrderProcessing = require('./services/cronJobs');
 // ========================================
 // IMPORTAR MODELOS Y RUTAS
 // ========================================
@@ -518,6 +518,10 @@ app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Ruta no encontrada', path: req.path });
 });
 
+// Iniciar el Cron Job
+startOrderProcessing();
+
+const port = process.env.PORT || 3000;
 
 // ========================================
 // INICIAR SERVIDOR
