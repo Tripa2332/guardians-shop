@@ -61,97 +61,86 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CONFIGURACIÓN DE SESIONES
 // ========================================
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secreto_temporal',
+    secret: process.env.SESSION_SECRET || 'tu-secreto-super-seguro-2025',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: mongoUri }),
+    store: new MongoStore({
+        mongoUrl: mongoUri,
+        touchAfter: 24 * 3600 // lazy session update
+    }),
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production'
-    }
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+        sameSite: 'lax'
+    },
+    name: 'guardians-session' // Nombre único para la cookie
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ========================================
 // CONFIGURACIÓN DE PASSPORT
 // ========================================
-app.use(passport.initialize());
-app.use(passport.session());
 
+// Serializar usuario
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    console.log('📌 Serializando usuario:', user._id);
+    done(null, user._id);
 });
 
+// Deserializar usuario
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);
+        console.log('📌 Deserializando usuario:', id, '- Encontrado:', !!user);
         done(null, user);
     } catch (err) {
-        done(err, null);
+        console.error('❌ Error deserializando:', err);
+        done(err);
     }
 });
 
-// --- ESTRATEGIA STEAM ---
-passport.use(new SteamStrategy({
-    returnURL: `${baseUrl}/auth/steam/return`,
-    realm: `${baseUrl}/`,
-    apiKey: process.env.STEAM_API_KEY
-},
-async (identifier, profile, done) => {
-    try {
-        let user = await User.findOne({ steamId: profile.id });
-        if (!user) {
-            user = await User.create({
-                steamId: profile.id,
-                displayName: profile.displayName,
-                avatar: profile.photos[2]?.value || profile.photos[0]?.value
-            });
-            console.log("✅ Usuario Steam nuevo creado:", user.displayName);
-        } else {
-            user.displayName = profile.displayName;
-            user.avatar = profile.photos[2]?.value || profile.photos[0]?.value;
-            await user.save();
-        }
-        return done(null, user);
-    } catch (error) {
-        console.error('❌ Error en estrategia Steam:', error);
-        return done(error, null);
-    }
-}));
-
-// --- ESTRATEGIA DISCORD ---
+// Estrategia Discord
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `${baseUrl}/auth/discord/return`,
-    scope: ['identify', 'email']
-},
-async (accessToken, refreshToken, profile, done) => {
+    callbackURL: `${baseUrl}/auth/discord/callback`,
+    scope: ['identify', 'email', 'guilds']
+}, async (accessToken, refreshToken, profile, done) => {
     try {
-        const avatarUrl = profile.avatar 
-            ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` 
-            : null;
-
-        let user = await User.findOne({ discordId: profile.id });
+        console.log('🔐 Discord profile recibido:', profile.id);
         
-        if (!user) {
-            user = await User.create({
-                discordId: profile.id,
-                displayName: profile.username || profile.global_name,
-                email: profile.email,
-                avatar: avatarUrl,
-                provider: 'discord'
-            });
-            console.log("✅ Usuario Discord nuevo creado:", user.displayName);
+        let user = await User.findOne({ discordId: profile.id });
+
+        if (user) {
+            console.log('✅ Usuario Discord encontrado, actualizando...');
+            user.discordUsername = profile.username;
+            user.avatar = profile.avatar;
+            user.email = profile.email || user.email;
+            user.lastLogin = new Date();
+            await user.save();
         } else {
-            user.displayName = profile.username || profile.global_name;
-            if(avatarUrl) user.avatar = avatarUrl;
+            console.log('➕ Creando nuevo usuario Discord...');
+            user = new User({
+                discordId: profile.id,
+                discordUsername: profile.username,
+                name: profile.username,
+                email: profile.email,
+                avatar: profile.avatar,
+                authProvider: 'discord',
+                createdAt: new Date(),
+                lastLogin: new Date()
+            });
             await user.save();
         }
+
+        console.log('✅ Usuario listo:', user._id);
         return done(null, user);
     } catch (err) {
-        console.error('❌ Error en estrategia Discord:', err);
-        return done(err, null);
+        console.error('❌ Error en Discord strategy:', err);
+        return done(err);
     }
 }));
 
@@ -171,7 +160,69 @@ const ensureAuthenticated = (req, res, next) => {
 // ========================================
 // RUTAS DE AUTENTICACIÓN
 // ========================================
-app.use('/auth', authRoutes);
+
+// Login Discord
+app.get('/auth/discord', (req, res, next) => {
+    console.log('🔗 Iniciando login Discord...');
+    passport.authenticate('discord')(req, res, next);
+});
+
+// Callback Discord
+app.get('/auth/discord/callback', (req, res, next) => {
+    console.log('↩️ Callback Discord recibido');
+    passport.authenticate('discord', {
+        failureRedirect: '/pages/login.html?error=discord'
+    })(req, res, next);
+}, (req, res) => {
+    console.log('✅ Autenticación completada, redirigiendo...');
+    console.log('Usuario en sesión:', req.user._id);
+    
+    // Convertir usuario a JSON para enviarlo al cliente
+    const userData = {
+        id: req.user._id,
+        name: req.user.discordUsername || req.user.name,
+        email: req.user.email,
+        avatar: `https://cdn.discordapp.com/avatars/${req.user.discordId}/${req.user.avatar}.png`,
+        provider: 'discord'
+    };
+
+    // Enviar datos al cliente
+    res.redirect(`/pages/vip.html?user=${encodeURIComponent(JSON.stringify(userData))}`);
+});
+
+// ========================================
+// RUTA DE PERFIL (Verificar autenticación)
+// ========================================
+app.get('/api/perfil', (req, res) => {
+    if (!req.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado en /api/perfil');
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    console.log('✅ Perfil solicitado por:', req.user._id);
+
+    res.json({
+        id: req.user._id,
+        name: req.user.discordUsername || req.user.name,
+        email: req.user.email,
+        avatar: `https://cdn.discordapp.com/avatars/${req.user.discordId}/${req.user.avatar}.png`,
+        provider: 'discord'
+    });
+});
+
+// ========================================
+// LOGOUT
+// ========================================
+app.get('/logout', (req, res) => {
+    console.log('🚪 Cerrando sesión del usuario:', req.user?._id);
+    req.logout((err) => {
+        if (err) {
+            console.error('❌ Error en logout:', err);
+            return res.status(500).json({ error: 'Error cerrando sesión' });
+        }
+        res.json({ success: true, message: 'Sesión cerrada' });
+    });
+});
 
 // ========================================
 // RUTAS DE API - PRODUCTOS (PÚBLICO)
@@ -495,13 +546,6 @@ async function entregarItemEnJuego(player, rawCommand) {
 // ========================================
 app.get('/api/mp-public-key', (req, res) => {
     res.json({ publicKey: process.env.MP_PUBLIC_KEY });
-});
-
-app.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) return next(err);
-        res.redirect('/');
-    });
 });
 
 // ========================================
