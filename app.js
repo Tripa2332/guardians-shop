@@ -15,6 +15,7 @@ const { Rcon } = require('rcon-client');
 // ========================================
 const User = require('./models/User');
 const Product = require('./models/Product');
+const Order = require('./models/Order'); // <--- 1. AGREGADO: Importante para que funcione el webhook
 const authRoutes = require('./routes/auth');
 
 const app = express();
@@ -214,6 +215,105 @@ app.get('/api/user', (req, res) => {
 });
 
 // ========================================
+// 2. AGREGADO: RUTA HISTORIAL DE COMPRAS
+// ========================================
+app.get('/api/my-orders', ensureAuthenticated, async (req, res) => {
+    try {
+        // Buscamos órdenes que pertenezcan a este usuario
+        const orders = await Order.find({ user: req.user._id })
+            .sort({ createdAt: -1 }) // Ordenar por fecha: las más nuevas primero
+            .limit(50); // Traer solo las últimas 50
+
+        res.json(orders);
+    } catch (error) {
+        console.error("Error buscando órdenes:", error);
+        res.status(500).json({ error: "Error interno al obtener el historial" });
+    }
+});
+// ========================================
+//  ZONA DE ADMINISTRACIÓN
+// ========================================
+
+// Middleware para proteger rutas de admin
+const ensureAdmin = (req, res, next) => {
+    if (req.isAuthenticated() && req.user.role === 'admin') {
+        return next();
+    }
+    // Si no es admin, redirigir al home o dar error 404 para ocultarlo
+    res.status(404).sendFile(path.join(__dirname, 'public/pages', 'fallo.html')); 
+    // O simplemente: res.redirect('/');
+};
+// --- RUTA BLINDADA DEL PANEL ---
+app.get('/admin', ensureAdmin, (req, res) => {
+    // __dirname apunta a la carpeta donde está app.js
+    const rutaArchivo = path.resolve(__dirname, 'private', 'admin.html');
+    console.log('Intentando servir archivo desde:', rutaArchivo); // Esto saldrá en la consola negra
+    res.sendFile(rutaArchivo);
+});
+// // --- RUTA TEMPORAL: EJECUTAR UNA VEZ PARA HACERTE ADMIN ---
+// // Visita: http://localhost:3000/setup-admin mientras estás logueado
+// app.get('/setup-admin', ensureAuthenticated, async (req, res) => {
+//     try {
+//         req.user.role = 'admin';
+//         await req.user.save();
+//         res.send(`✅ ¡Hecho! El usuario <b>${req.user.displayName}</b> ahora es ADMINISTRADOR. <a href="/">Volver</a>`);
+//     } catch (error) {
+//         res.status(500).send('Error: ' + error.message);
+//     }
+// });
+
+// 1. Crear Producto
+app.post('/api/admin/products', ensureAdmin, async (req, res) => {
+    try {
+        const { sku, nombre, precio, descripcion, imagen, categoria, rconCommand, stock, emoji } = req.body;
+        
+        const existing = await Product.findOne({ sku });
+        if (existing) return res.status(400).json({ success: false, message: 'El SKU ya existe' });
+
+        const newProduct = await Product.create({
+            sku, nombre, precio, descripcion, imagen, 
+            category: categoria, 
+            rconCommand, 
+            stock: stock || -1,
+            emoji: emoji || '📦'
+        });
+
+        res.json({ success: true, product: newProduct });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 2. Eliminar Producto
+app.delete('/api/admin/products/:id', ensureAdmin, async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: 'Producto eliminado' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 3. Editar Producto (Básico: cambiar stock o precio)
+app.put('/api/admin/products/:id', ensureAdmin, async (req, res) => {
+    try {
+        const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json({ success: true, product: updated });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 4. Ver Todas las Órdenes (Para el panel)
+app.get('/api/admin/orders', ensureAdmin, async (req, res) => {
+    try {
+        const orders = await Order.find().populate('user', 'displayName email').sort({ createdAt: -1 }).limit(100);
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+// ========================================
 // RUTAS DE MERCADO PAGO
 // ========================================
 
@@ -222,55 +322,28 @@ app.post('/api/crear-orden', ensureAuthenticated, async (req, res) => {
     try {
         console.log('📨 Solicitud de orden recibida');
         console.log('Usuario autenticado:', req.user?.displayName || 'Desconocido');
-        console.log('Body:', req.body);
-
         const { productSku, quantity } = req.body;
 
         // Validar entrada
         if (!productSku) {
-            console.warn('❌ Falta productSku');
-            return res.status(400).json({ 
-                success: false,
-                message: 'Falta el SKU del producto' 
-            });
+            return res.status(400).json({ success: false, message: 'Falta el SKU del producto' });
         }
 
-        // 1️⃣ Buscar producto en BD
-        console.log(`🔍 Buscando producto con SKU: ${productSku}`);
+        // Buscar producto en BD
         const product = await Product.findOne({ sku: productSku });
         
-        console.log('Producto encontrado:', product);
-
         if (!product) {
-            console.warn(`❌ Producto no encontrado: ${productSku}`);
-            return res.status(404).json({ 
-                success: false,
-                message: `Producto no encontrado: ${productSku}` 
-            });
+            return res.status(404).json({ success: false, message: `Producto no encontrado: ${productSku}` });
         }
 
-        // 2️⃣ Validar que el producto está activo
         if (!product.activo) {
-            console.warn('❌ Producto no activo');
-            return res.status(400).json({ 
-                success: false,
-                message: 'Producto no disponible' 
-            });
+            return res.status(400).json({ success: false, message: 'Producto no disponible' });
         }
 
-        // 3️⃣ Calcular cantidad
         const quantityNum = Math.max(1, Number(quantity) || 1);
-
-        // 4️⃣ Obtener datos del usuario de la sesión
         const playerUsername = req.user.displayName || `Usuario_${req.user._id}`;
 
-        console.log(`✅ Validación exitosa. Preparando orden:`);
-        console.log(`   - Producto: ${product.nombre}`);
-        console.log(`   - Precio: $${product.precio}`);
-        console.log(`   - Cantidad: ${quantityNum}`);
-        console.log(`   - Jugador: ${playerUsername}`);
-
-        // 5️⃣ Crear preferencia en Mercado Pago
+        // Crear preferencia en Mercado Pago
         const preference = new Preference(mercadoPagoClient);
         
         const orderData = {
@@ -294,123 +367,125 @@ app.post('/api/crear-orden', ensureAuthenticated, async (req, res) => {
             notification_url: `${process.env.WEBHOOK_URL}/webhook`
         };
 
-        console.log('📤 Enviando a Mercado Pago:', JSON.stringify(orderData, null, 2));
-
         const result = await preference.create({ body: orderData });
 
-        console.log(`✅ Preferencia creada en Mercado Pago:`);
-        console.log(`   - ID: ${result.id}`);
-        console.log(`   - URL: ${result.init_point}`);
-
-        res.json({ 
-            success: true,
-            id: result.id, 
-            init_point: result.init_point 
-        });
+        console.log(`✅ Preferencia MP creada: ${result.id}`);
+        res.json({ success: true, id: result.id, init_point: result.init_point });
 
     } catch (error) {
-        console.error('❌ ERROR EN CHECKOUT:');
-        console.error('   Mensaje:', error.message);
-        console.error('   Stack:', error.stack);
-        console.error('   Response:', error.response?.data || 'Sin datos de respuesta');
-
-        res.status(500).json({ 
-            success: false,
-            message: `Error al crear la orden: ${error.message}`,
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
+        console.error('❌ ERROR EN CHECKOUT:', error.message);
+        res.status(500).json({ success: false, message: `Error al crear la orden: ${error.message}` });
     }
 });
 
 // ========================================
-// WEBHOOK DE MERCADO PAGO
+// WEBHOOK DE MERCADO PAGO MEJORADO
 // ========================================
 app.post('/webhook', async (req, res) => {
     try {
         const { query } = req;
         const topic = query.topic || query.type;
 
-        console.log(`📬 Webhook recibido - Tipo: ${topic}`);
-
         if (topic === 'payment') {
             const paymentId = query.id || query['data.id'];
             
-            if (!paymentId) {
-                console.warn('⚠️ No se recibió ID de pago');
-                return res.sendStatus(400);
+            if (!paymentId) return res.sendStatus(400);
+
+            // 1. IDEMPOTENCIA
+            const ordenExistente = await Order.findOne({ paymentId: String(paymentId) });
+            if (ordenExistente && ordenExistente.status === 'approved') {
+                console.log(`⚠️ Pago ${paymentId} ya fue procesado anteriormente.`);
+                return res.sendStatus(200);
             }
 
             try {
                 const payment = new Payment(mercadoPagoClient);
                 const paymentData = await payment.get({ id: paymentId });
                 
-                console.log(`💳 Estado de pago: ${paymentData.status}`);
-
                 if (paymentData.status === 'approved') {
-                    // Extraer metadata segura
                     const { player_username, product_sku, user_id } = paymentData.metadata;
-                    
-                    if (!player_username || !product_sku) {
+
+                    if (!player_username || !product_sku || !user_id) {
                         console.error('❌ Metadata incompleta en pago aprobado');
                         return res.sendStatus(400);
                     }
 
-                    // Buscar producto en BD
                     const product = await Product.findOne({ sku: product_sku });
-                    
-                    if (product) {
-                        console.log(`✅ Pago aprobado. Entregando ${product.name} a ${player_username}`);
-                        
-                        // Entregar item en juego
-                        await entregarItemEnJuego(player_username, product.rconCommand);
-                        
-                        // Actualizar balance del usuario si es necesario
-                        if (user_id) {
-                            await User.findByIdAndUpdate(user_id, {
-                                $inc: { balance: product.precio || 0 }
-                            });
-                        }
-                    } else {
-                        console.error(`❌ Producto no encontrado para entrega: ${product_sku}`);
+                    if (!product) {
+                        console.error(`❌ Producto no encontrado: ${product_sku}`);
+                        return res.sendStatus(400);
                     }
-                } else if (paymentData.status === 'rejected') {
-                    console.warn('❌ Pago rechazado');
-                } else if (paymentData.status === 'pending') {
-                    console.log('⏳ Pago pendiente');
+
+                    // Crear/Actualizar Orden
+                    let orden = ordenExistente;
+                    if (!orden) {
+                        orden = await Order.create({
+                            user: user_id,
+                            paymentId: String(paymentId),
+                            productSku: product.sku,
+                            productName: product.nombre,
+                            price: product.precio,
+                            status: 'approved'
+                        });
+                    } else {
+                        orden.status = 'approved';
+                        await orden.save();
+                    }
+
+                    console.log(`✅ Pago ${paymentId} aprobado. Procesando entrega...`);
+
+                    // Entregar Item
+                    const entregado = await entregarItemEnJuego(player_username, product.rconCommand);
+
+                    if (entregado) {
+                        orden.deliveryStatus = 'delivered';
+                        console.log(`🎁 Entrega exitosa a ${player_username}`);
+                    } else {
+                        orden.deliveryStatus = 'failed';
+                        console.error(`⚠️ Falló la entrega RCON. Orden: ${orden._id}`);
+                    }
+                    
+                    // Actualizar saldo
+                    await User.findByIdAndUpdate(user_id, {
+                        $inc: { balance: product.precio }
+                    });
+
+                    await orden.save();
                 }
             } catch (paymentError) {
-                console.error('❌ Error consultando pago:', paymentError);
+                console.error('❌ Error procesando datos de pago:', paymentError);
             }
         }
-
         res.sendStatus(200);
     } catch (error) {
-        console.error('❌ Error en webhook:', error);
+        console.error('❌ Error crítico en webhook:', error);
         res.sendStatus(500);
     }
 });
 
 // ========================================
-// FUNCIÓN RCON (ENTREGAR ITEMS)
+// FUNCIÓN RCON SEGURA
 // ========================================
 async function entregarItemEnJuego(player, rawCommand) {
     try {
-        console.log(`🎮 Intentando conectar RCON a ${rconConfig.host}:${rconConfig.port}`);
+        // SANITIZACIÓN
+        const safePlayerName = player.replace(/[^a-zA-Z0-9_-]/g, "");
+
+        if (safePlayerName !== player) {
+            console.warn(`⚠️ Nombre sanitizado: "${player}" -> "${safePlayerName}"`);
+        }
+
+        const finalCommand = rawCommand.replace('{player}', safePlayerName);
+        console.log(`🎮 RCON -> ${rconConfig.host}: ${finalCommand}`);
         
         const rcon = await Rcon.connect(rconConfig);
-        
-        // Reemplazar placeholder {player} con nombre real
-        const finalCommand = rawCommand.replace('{player}', player);
-        
-        console.log(`📤 Enviando comando: ${finalCommand}`);
         const response = await rcon.send(finalCommand);
-        
-        console.log(`✅ Respuesta RCON: ${response}`);
         await rcon.end();
         
+        console.log(`✅ RCON Respuesta: ${response}`);
         return true;
     } catch (error) {
-        console.error(`⚠️ Error RCON: ${error.message}`);
+        console.error(`❌ Error RCON: ${error.message}`);
         return false;
     }
 }
@@ -418,11 +493,8 @@ async function entregarItemEnJuego(player, rawCommand) {
 // ========================================
 // RUTAS AUXILIARES
 // ========================================
-
 app.get('/api/mp-public-key', (req, res) => {
-    res.json({ 
-        publicKey: process.env.MP_PUBLIC_KEY 
-    });
+    res.json({ publicKey: process.env.MP_PUBLIC_KEY });
 });
 
 app.get('/logout', (req, res, next) => {
@@ -435,7 +507,6 @@ app.get('/logout', (req, res, next) => {
 // ========================================
 // RUTAS ESTÁTICAS
 // ========================================
-
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages', 'index.html'));
 });
@@ -443,24 +514,19 @@ app.get('/', (req, res) => {
 // ========================================
 // MANEJO DE ERRORES 404
 // ========================================
-
 app.use((req, res) => {
-    res.status(404).json({ 
-        success: false,
-        message: 'Ruta no encontrada',
-        path: req.path 
-    });
+    res.status(404).json({ success: false, message: 'Ruta no encontrada', path: req.path });
 });
+
 
 // ========================================
 // INICIAR SERVIDOR
 // ========================================
-
 app.listen(PORT, () => {
     console.log(`
     ╔════════════════════════════════════╗
     ║   🎮 Guardians Shop - Servidor    ║
-    ║   Puerto: ${PORT}                     ║
+    ║   Puerto: ${PORT}                    ║
     ║   Base URL: ${baseUrl}       ║
     ╚════════════════════════════════════╝
     `);

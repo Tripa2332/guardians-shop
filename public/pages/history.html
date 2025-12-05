@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - Guardians Shop</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #111827; color: #f3f4f6; }
+        .table-container { background-color: #1f2937; border-radius: 0.5rem; }
+        th { color: #eab308; } /* Amarillo */
+        td { color: #d1d5db; border-bottom: 1px solid #374151; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
+
+    <div id="navbar-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 mt-20">
+        <h1 class="text-3xl font-bold text-yellow-500 mb-6 text-center">
+            <i class="ri-history-line"></i> Historial de Compras
+        </h1>
+
+        <div class="table-container shadow-lg overflow-hidden mx-auto max-w-4xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-700 text-yellow-500 uppercase text-sm">
+                        <tr>
+                            <th class="px-6 py-4">Producto</th>
+                            <th class="px-6 py-4">Precio</th>
+                            <th class="px-6 py-4">Fecha</th>
+                            <th class="px-6 py-4">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list" class="divide-y divide-gray-700">
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                                <i class="ri-loader-4-line animate-spin text-2xl"></i><br>
+                                Cargando tus compras...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="/pages/index.html" class="text-yellow-500 hover:text-yellow-400 underline">
+                Volver a la tienda
+            </a>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="../assets/js/load-navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const listContainer = document.getElementById('orders-list');
+
+            try {
+                const response = await fetch('/api/my-orders');
+                
+                // Si la respuesta no es OK (ej: 401 no logueado, 500 error servidor)
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const orders = await response.json();
+                listContainer.innerHTML = ''; // Limpiar spinner
+
+                if (!orders || orders.length === 0) {
+                    listContainer.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                                <i class="ri-shopping-cart-line text-4xl mb-2"></i><br>
+                                No has realizado compras aún.
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                orders.forEach(order => {
+                    // Formatear fecha de forma segura
+                    let dateStr = "Fecha desconocida";
+                    if (order.createdAt) {
+                        dateStr = new Date(order.createdAt).toLocaleDateString('es-ES', {
+                            day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit'
+                        });
+                    }
+
+                    // Colores según estado
+                    let statusBadge = `<span class="px-2 py-1 rounded bg-yellow-900 text-yellow-300 text-xs">Pendiente</span>`;
+                    
+                    if (order.deliveryStatus === 'delivered' || order.status === 'delivered') {
+                        statusBadge = `<span class="px-2 py-1 rounded bg-green-900 text-green-300 text-xs">Entregado ✅</span>`;
+                    } else if (order.deliveryStatus === 'failed') {
+                        statusBadge = `<span class="px-2 py-1 rounded bg-red-900 text-red-300 text-xs">Error Entrega ❌</span>`;
+                    }
+
+                    const row = `
+                        <tr class="hover:bg-gray-700 transition-colors">
+                            <td class="px-6 py-4 font-medium text-white">${order.productName || order.item || 'Ítem'}</td>
+                            <td class="px-6 py-4 text-gray-300">$${order.price}</td>
+                            <td class="px-6 py-4 text-gray-400 text-sm">${dateStr}</td>
+                            <td class="px-6 py-4">${statusBadge}</td>
+                        </tr>
+                    `;
+                    listContainer.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error("Error cargando historial:", error);
+                listContainer.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-6 text-center text-red-400">
+                            <i class="ri-error-warning-line text-2xl"></i><br>
+                            No se pudo cargar el historial.<br>
+                            <small class="text-gray-500">${error.message}</small>
+                        </td>
+                    </tr>`;
+            }
+        });
+    </script>
+</body>
+</html>

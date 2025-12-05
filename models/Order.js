@@ -1,16 +1,31 @@
+
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-  userSteamId: { type: String, required: true }, // Quién compró
-  paymentId: { type: String, required: true }, // ID de MercadoPago
-  item: { type: String, required: true }, // Qué compró (ej: "Rex Tek")
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  paymentId: { 
+    type: String, 
+    required: true, 
+    unique: true // IMPORTANTE: Evita duplicados a nivel base de datos
+  },
+  productSku: String,
+  productName: String,
   price: Number,
+  quantity: { type: Number, default: 1 },
   status: { 
     type: String, 
-    enum: ['pending_delivery', 'delivered', 'failed'], 
-    default: 'pending_delivery' 
+    enum: ['pending', 'approved', 'delivered', 'failed_delivery', 'refunded'], 
+    default: 'pending' 
   },
-  date: { type: Date, default: Date.now }
+  deliveryStatus: {
+    type: String,
+    default: 'pending' // Para saber si el RCON funcionó
+  },
+  createdAt: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Order', OrderSchema);
