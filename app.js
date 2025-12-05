@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo').default || require('connect-mongo');
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { Rcon } = require('rcon-client');
 const startOrderProcessing = require('./services/cronJobs');
+
 // ========================================
 // IMPORTAR MODELOS Y RUTAS
 // ========================================
@@ -102,22 +103,72 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-// Estrategia Discord
+// ⭐ ESTRATEGIA STEAM
+passport.use(new SteamStrategy({
+    returnURL: `${baseUrl}/auth/steam/return`,
+    realm: baseUrl,
+    apiKey: process.env.STEAM_API_KEY
+}, async (identifier, profile, done) => {
+    try {
+        console.log('🔐 Steam profile recibido:', profile.steamID);
+        console.log('🖼️ Avatar Steam:', profile.avatar);
+        
+        const steamName = profile.displayName || `Steam_${profile.steamID.slice(-8)}`;
+        // Steam devuelve: profile.avatarmedium o profile.avatar
+        const avatarUrl = profile.avatarmedium || profile.avatar || '/assets/img/default-avatar.png';
+        
+        let user = await User.findOne({ steamId: profile.steamID });
+
+        if (user) {
+            console.log('✅ Usuario Steam encontrado, actualizando...');
+            user.name = steamName;
+            user.avatar = avatarUrl;
+            user.lastLogin = new Date();
+            await user.save();
+        } else {
+            console.log('➕ Creando nuevo usuario Steam...');
+            user = new User({
+                steamId: profile.steamID,
+                name: steamName,
+                avatar: avatarUrl,
+                authProvider: 'steam',
+                lastLogin: new Date()
+            });
+            await user.save();
+        }
+
+        console.log('✅ Avatar guardado:', user.avatar);
+        return done(null, user);
+    } catch (err) {
+        console.error('❌ Error en Steam strategy:', err);
+        return done(err);
+    }
+}));
+
+// ⭐ ESTRATEGIA DISCORD
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `${baseUrl}/auth/discord/callback`,
+    callbackURL: `${baseUrl}/auth/discord/return`,
     scope: ['identify', 'email', 'guilds']
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         console.log('🔐 Discord profile recibido:', profile.id);
+        console.log('🖼️ Avatar Discord hash:', profile.avatar);
+        
+        const discordName = profile.username || `Discord_${profile.id.slice(-8)}`;
+        // Discord devuelve un hash, necesitamos construir la URL
+        const avatarUrl = profile.avatar 
+            ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png?size=256`
+            : '/assets/img/default-avatar.png';
         
         let user = await User.findOne({ discordId: profile.id });
 
         if (user) {
             console.log('✅ Usuario Discord encontrado, actualizando...');
+            user.name = discordName;
             user.discordUsername = profile.username;
-            user.avatar = profile.avatar;
+            user.avatar = avatarUrl;
             user.email = profile.email || user.email;
             user.lastLogin = new Date();
             await user.save();
@@ -126,17 +177,16 @@ passport.use(new DiscordStrategy({
             user = new User({
                 discordId: profile.id,
                 discordUsername: profile.username,
-                name: profile.username,
+                name: discordName,
                 email: profile.email,
-                avatar: profile.avatar,
+                avatar: avatarUrl,
                 authProvider: 'discord',
-                createdAt: new Date(),
                 lastLogin: new Date()
             });
             await user.save();
         }
 
-        console.log('✅ Usuario listo:', user._id);
+        console.log('✅ Avatar guardado:', user.avatar);
         return done(null, user);
     } catch (err) {
         console.error('❌ Error en Discord strategy:', err);
@@ -160,38 +210,9 @@ const ensureAuthenticated = (req, res, next) => {
 // ========================================
 // RUTAS DE AUTENTICACIÓN
 // ========================================
-
-// Login Discord
-app.get('/auth/discord', (req, res, next) => {
-    console.log('🔗 Iniciando login Discord...');
-    passport.authenticate('discord')(req, res, next);
-});
-
-// Callback Discord
-app.get('/auth/discord/callback', (req, res, next) => {
-    console.log('↩️ Callback Discord recibido');
-    passport.authenticate('discord', {
-        failureRedirect: '/pages/login.html?error=discord'
-    })(req, res, next);
-}, (req, res) => {
-    console.log('✅ Autenticación completada, redirigiendo...');
-    console.log('Usuario en sesión:', req.user._id);
-    
-    // Convertir usuario a JSON para enviarlo al cliente
-    const userData = {
-        id: req.user._id,
-        name: req.user.discordUsername || req.user.name,
-        email: req.user.email,
-        avatar: `https://cdn.discordapp.com/avatars/${req.user.discordId}/${req.user.avatar}.png`,
-        provider: 'discord'
-    };
-
-    // Enviar datos al cliente
-    res.redirect(`/pages/vip.html?user=${encodeURIComponent(JSON.stringify(userData))}`);
-});
-
+app.use('/auth', authRoutes);
 // ========================================
-// RUTA DE PERFIL (Verificar autenticación)
+// RUTA DE PERFIL
 // ========================================
 app.get('/api/perfil', (req, res) => {
     if (!req.isAuthenticated()) {
@@ -201,12 +222,15 @@ app.get('/api/perfil', (req, res) => {
 
     console.log('✅ Perfil solicitado por:', req.user._id);
 
+    const avatar = req.user.avatar || '/assets/img/default-avatar.png';
+    const provider = req.user.authProvider || (req.user.steamId ? 'steam' : 'discord');
+
     res.json({
         id: req.user._id,
-        name: req.user.discordUsername || req.user.name,
-        email: req.user.email,
-        avatar: `https://cdn.discordapp.com/avatars/${req.user.discordId}/${req.user.avatar}.png`,
-        provider: 'discord'
+        name: req.user.name,
+        email: req.user.email || '',
+        avatar: avatar,
+        provider: provider
     });
 });
 
