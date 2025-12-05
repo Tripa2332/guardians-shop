@@ -6,59 +6,74 @@ const SteamStrategy = require('passport-steam').Strategy;
 const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
 const mongoose = require('mongoose');
-// Corrección para importar MongoStore en diferentes versiones
 const MongoStore = require('connect-mongo').default || require('connect-mongo');
-
-// Modelos
-const User = require('./models/User');
-
-// Integraciones externas
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { Rcon } = require('rcon-client');
+
+// ========================================
+// IMPORTAR MODELOS Y RUTAS
+// ========================================
+const User = require('./models/User');
+const Product = require('./models/Product');
 const authRoutes = require('./routes/auth');
 
 const app = express();
 
-// --- CONFIGURACIÓN DE URL BASE ---
-// Si no hay BASE_URL en el .env, usa localhost por defecto
+// ========================================
+// CONFIGURACIÓN BASE
+// ========================================
 const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-console.log(`🌍 Base URL configurada en: ${baseUrl}`);
-
-// --- CONEXIÓN BASE DE DATOS ---
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/guardians-shop';
+const PORT = process.env.PORT || 3000;
 
+console.log(`🌍 Base URL: ${baseUrl}`);
+console.log(`📊 MongoDB: ${mongoUri}`);
+
+// ========================================
+// CONEXIÓN A BASE DE DATOS
+// ========================================
 mongoose.connect(mongoUri)
     .then(() => console.log('✅ Base de datos MongoDB conectada'))
-    .catch(err => {
-        console.error('❌ Error conectando a BD:', err.message);
-    });
+    .catch(err => console.error('❌ Error conectando a BD:', err.message));
 
-// Configuración Mercado Pago
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+// ========================================
+// CONFIGURACIÓN DE INTEGRACIONES
+// ========================================
+const mercadoPagoClient = new MercadoPagoConfig({ 
+    accessToken: process.env.MP_ACCESS_TOKEN 
+});
 
-// Configuración RCON (Servidores de juego)
 const rconConfig = {
     host: process.env.RCON_HOST || '127.0.0.1',
     port: parseInt(process.env.RCON_PORT) || 25575,
     password: process.env.RCON_PASSWORD
 };
 
-// Middleware básico
+// ========================================
+// MIDDLEWARE GLOBAL
+// ========================================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Sesiones
+// ========================================
+// CONFIGURACIÓN DE SESIONES
+// ========================================
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secreto_temporal',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: mongoUri }),
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 semana
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production'
     }
 }));
 
-// Inicializar Passport
+// ========================================
+// CONFIGURACIÓN DE PASSPORT
+// ========================================
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -80,45 +95,45 @@ passport.use(new SteamStrategy({
     returnURL: `${baseUrl}/auth/steam/return`,
     realm: `${baseUrl}/`,
     apiKey: process.env.STEAM_API_KEY
-  },
-  async (identifier, profile, done) => {
+},
+async (identifier, profile, done) => {
     try {
         let user = await User.findOne({ steamId: profile.id });
         if (!user) {
             user = await User.create({
                 steamId: profile.id,
                 displayName: profile.displayName,
-                avatar: profile.photos[2].value
+                avatar: profile.photos[2]?.value || profile.photos[0]?.value
             });
-            console.log("¡Usuario Steam nuevo creado!");
+            console.log("✅ Usuario Steam nuevo creado:", user.displayName);
         } else {
             user.displayName = profile.displayName;
-            user.avatar = profile.photos[2].value;
+            user.avatar = profile.photos[2]?.value || profile.photos[0]?.value;
             await user.save();
         }
         return done(null, user);
     } catch (error) {
+        console.error('❌ Error en estrategia Steam:', error);
         return done(error, null);
     }
-  }
-));
+}));
 
 // --- ESTRATEGIA DISCORD ---
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `${baseUrl}/auth/discord/return`, 
+    callbackURL: `${baseUrl}/auth/discord/return`,
     scope: ['identify', 'email']
-  },
-  async (accessToken, refreshToken, profile, done) => {
+},
+async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ discordId: profile.id });
         const avatarUrl = profile.avatar 
             ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` 
             : null;
 
+        let user = await User.findOne({ discordId: profile.id });
+        
         if (!user) {
-            console.log("Creando nuevo usuario de Discord...");
             user = await User.create({
                 discordId: profile.id,
                 displayName: profile.username || profile.global_name,
@@ -126,6 +141,7 @@ passport.use(new DiscordStrategy({
                 avatar: avatarUrl,
                 provider: 'discord'
             });
+            console.log("✅ Usuario Discord nuevo creado:", user.displayName);
         } else {
             user.displayName = profile.username || profile.global_name;
             if(avatarUrl) user.avatar = avatarUrl;
@@ -133,78 +149,282 @@ passport.use(new DiscordStrategy({
         }
         return done(null, user);
     } catch (err) {
-        console.error("Error en estrategia Discord:", err);
+        console.error('❌ Error en estrategia Discord:', err);
         return done(err, null);
     }
-  }
-));
+}));
 
-// --- RUTAS ---
-app.use(express.static(path.join(__dirname, 'public')));
+// ========================================
+// MIDDLEWARE DE AUTENTICACIÓN
+// ========================================
+const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ 
+        success: false,
+        message: 'Debes iniciar sesión para realizar esta acción' 
+    });
+};
+
+// ========================================
+// RUTAS DE AUTENTICACIÓN
+// ========================================
 app.use('/auth', authRoutes);
 
-// Mercado Pago
-app.post('/crear-orden', async (req, res) => {
+// ========================================
+// RUTAS DE API - PRODUCTOS (PÚBLICO)
+// ========================================
+app.get('/api/products', async (req, res) => {
     try {
-        const { title, price, quantity, userId, itemId } = req.body;
-        if (!title || !price || !quantity || !userId) return res.status(400).json({ message: 'Datos faltantes' });
-
-        const preference = new Preference(client);
-        const result = await preference.create({
-            body: {
-                items: [{ title, unit_price: Number(price), quantity: Number(quantity), currency_id: 'ARS' }],
-                metadata: { player_id: userId, item_id: itemId },
-                back_urls: {
-                    success: `${baseUrl}/pages/exito.html`,
-                    failure: `${baseUrl}/pages/fallo.html`,
-                    pending: `${baseUrl}/pages/pendiente.html`
-                },
-                notification_url: `${process.env.WEBHOOK_URL}/webhook`
-            }
-        });
-        res.json({ id: result.id, init_point: result.init_point });
+        const products = await Product.find({ activo: true });
+        
+        const grouped = {
+            vips: products.filter(p => p.category === 'vips'),
+            kits: products.filter(p => p.category === 'kits'),
+            dinos: products.filter(p => p.category === 'dinos'),
+            blueprints: products.filter(p => p.category === 'blueprints'),
+            tribelog: products.filter(p => p.category === 'tribelog')
+        };
+        
+        console.log(`📦 Productos enviados: ${products.length}`);
+        res.json(grouped);
     } catch (error) {
-        console.error("Error MP:", error);
-        res.status(500).json({ message: "Error al crear preferencia" });
+        console.error('❌ Error en /api/products:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
-app.post('/webhook', async (req, res) => {
-    const { query } = req;
-    const topic = query.topic || query.type;
+// ========================================
+// RUTAS DE API - USUARIO ACTUAL
+// ========================================
+app.get('/api/user', (req, res) => {
+    if (!req.user) {
+        return res.json(null);
+    }
+    
+    res.json({
+        id: req.user._id,
+        name: req.user.displayName,
+        avatar: req.user.avatar,
+        balance: req.user.balance || 0,
+        provider: req.user.provider || (req.user.steamId ? 'steam' : 'discord'),
+        email: req.user.email
+    });
+});
 
-    if (topic === 'payment') {
-        const paymentId = query.id || query['data.id'];
-        try {
-            const payment = new Payment(client);
-            const paymentData = await payment.get({ id: paymentId });
-            
-            if (paymentData.status === 'approved') {
-                const { player_username, item_id } = paymentData.metadata;
-                console.log(`✅ Pago aprobado: ${player_username} -> ${item_id}`);
-                await entregarItemEnJuego(player_username, item_id);
-            }
-        } catch (error) {
-            console.error("Error Webhook:", error);
+// ========================================
+// RUTAS DE MERCADO PAGO
+// ========================================
+
+// ✅ CREAR ORDEN (REQUIERE AUTENTICACIÓN)
+app.post('/api/crear-orden', ensureAuthenticated, async (req, res) => {
+    try {
+        console.log('📨 Solicitud de orden recibida');
+        console.log('Usuario autenticado:', req.user?.displayName || 'Desconocido');
+        console.log('Body:', req.body);
+
+        const { productSku, quantity } = req.body;
+
+        // Validar entrada
+        if (!productSku) {
+            console.warn('❌ Falta productSku');
+            return res.status(400).json({ 
+                success: false,
+                message: 'Falta el SKU del producto' 
+            });
         }
+
+        // 1️⃣ Buscar producto en BD
+        console.log(`🔍 Buscando producto con SKU: ${productSku}`);
+        const product = await Product.findOne({ sku: productSku });
+        
+        console.log('Producto encontrado:', product);
+
+        if (!product) {
+            console.warn(`❌ Producto no encontrado: ${productSku}`);
+            return res.status(404).json({ 
+                success: false,
+                message: `Producto no encontrado: ${productSku}` 
+            });
+        }
+
+        // 2️⃣ Validar que el producto está activo
+        if (!product.activo) {
+            console.warn('❌ Producto no activo');
+            return res.status(400).json({ 
+                success: false,
+                message: 'Producto no disponible' 
+            });
+        }
+
+        // 3️⃣ Calcular cantidad
+        const quantityNum = Math.max(1, Number(quantity) || 1);
+
+        // 4️⃣ Obtener datos del usuario de la sesión
+        const playerUsername = req.user.displayName || `Usuario_${req.user._id}`;
+
+        console.log(`✅ Validación exitosa. Preparando orden:`);
+        console.log(`   - Producto: ${product.nombre}`);
+        console.log(`   - Precio: $${product.precio}`);
+        console.log(`   - Cantidad: ${quantityNum}`);
+        console.log(`   - Jugador: ${playerUsername}`);
+
+        // 5️⃣ Crear preferencia en Mercado Pago
+        const preference = new Preference(mercadoPagoClient);
+        
+        const orderData = {
+            items: [{
+                id: product.sku,
+                title: product.nombre,
+                unit_price: Number(product.precio),
+                quantity: quantityNum,
+                currency_id: 'ARS'
+            }],
+            metadata: { 
+                player_username: playerUsername,
+                product_sku: product.sku,
+                user_id: req.user._id.toString()
+            },
+            back_urls: {
+                success: `${baseUrl}/pages/exito.html`,
+                failure: `${baseUrl}/pages/fallo.html`,
+                pending: `${baseUrl}/pages/pendiente.html`
+            },
+            notification_url: `${process.env.WEBHOOK_URL}/webhook`
+        };
+
+        console.log('📤 Enviando a Mercado Pago:', JSON.stringify(orderData, null, 2));
+
+        const result = await preference.create({ body: orderData });
+
+        console.log(`✅ Preferencia creada en Mercado Pago:`);
+        console.log(`   - ID: ${result.id}`);
+        console.log(`   - URL: ${result.init_point}`);
+
+        res.json({ 
+            success: true,
+            id: result.id, 
+            init_point: result.init_point 
+        });
+
+    } catch (error) {
+        console.error('❌ ERROR EN CHECKOUT:');
+        console.error('   Mensaje:', error.message);
+        console.error('   Stack:', error.stack);
+        console.error('   Response:', error.response?.data || 'Sin datos de respuesta');
+
+        res.status(500).json({ 
+            success: false,
+            message: `Error al crear la orden: ${error.message}`,
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
-    res.sendStatus(200);
 });
 
-// Función RCON
-async function entregarItemEnJuego(player, item) {
+// ========================================
+// WEBHOOK DE MERCADO PAGO
+// ========================================
+app.post('/webhook', async (req, res) => {
     try {
-        const rcon = await Rcon.connect(rconConfig);
-        const command = `give ${player} ${item} 1`; 
-        const response = await rcon.send(command);
-        console.log("🎮 RCON Res:", response);
-        await rcon.end();
+        const { query } = req;
+        const topic = query.topic || query.type;
+
+        console.log(`📬 Webhook recibido - Tipo: ${topic}`);
+
+        if (topic === 'payment') {
+            const paymentId = query.id || query['data.id'];
+            
+            if (!paymentId) {
+                console.warn('⚠️ No se recibió ID de pago');
+                return res.sendStatus(400);
+            }
+
+            try {
+                const payment = new Payment(mercadoPagoClient);
+                const paymentData = await payment.get({ id: paymentId });
+                
+                console.log(`💳 Estado de pago: ${paymentData.status}`);
+
+                if (paymentData.status === 'approved') {
+                    // Extraer metadata segura
+                    const { player_username, product_sku, user_id } = paymentData.metadata;
+                    
+                    if (!player_username || !product_sku) {
+                        console.error('❌ Metadata incompleta en pago aprobado');
+                        return res.sendStatus(400);
+                    }
+
+                    // Buscar producto en BD
+                    const product = await Product.findOne({ sku: product_sku });
+                    
+                    if (product) {
+                        console.log(`✅ Pago aprobado. Entregando ${product.name} a ${player_username}`);
+                        
+                        // Entregar item en juego
+                        await entregarItemEnJuego(player_username, product.rconCommand);
+                        
+                        // Actualizar balance del usuario si es necesario
+                        if (user_id) {
+                            await User.findByIdAndUpdate(user_id, {
+                                $inc: { balance: product.precio || 0 }
+                            });
+                        }
+                    } else {
+                        console.error(`❌ Producto no encontrado para entrega: ${product_sku}`);
+                    }
+                } else if (paymentData.status === 'rejected') {
+                    console.warn('❌ Pago rechazado');
+                } else if (paymentData.status === 'pending') {
+                    console.log('⏳ Pago pendiente');
+                }
+            } catch (paymentError) {
+                console.error('❌ Error consultando pago:', paymentError);
+            }
+        }
+
+        res.sendStatus(200);
     } catch (error) {
-        console.error("⚠️ Fallo RCON:", error.message);
+        console.error('❌ Error en webhook:', error);
+        res.sendStatus(500);
+    }
+});
+
+// ========================================
+// FUNCIÓN RCON (ENTREGAR ITEMS)
+// ========================================
+async function entregarItemEnJuego(player, rawCommand) {
+    try {
+        console.log(`🎮 Intentando conectar RCON a ${rconConfig.host}:${rconConfig.port}`);
+        
+        const rcon = await Rcon.connect(rconConfig);
+        
+        // Reemplazar placeholder {player} con nombre real
+        const finalCommand = rawCommand.replace('{player}', player);
+        
+        console.log(`📤 Enviando comando: ${finalCommand}`);
+        const response = await rcon.send(finalCommand);
+        
+        console.log(`✅ Respuesta RCON: ${response}`);
+        await rcon.end();
+        
+        return true;
+    } catch (error) {
+        console.error(`⚠️ Error RCON: ${error.message}`);
+        return false;
     }
 }
 
-// Rutas auxiliares
+// ========================================
+// RUTAS AUXILIARES
+// ========================================
+
+app.get('/api/mp-public-key', (req, res) => {
+    res.json({ 
+        publicKey: process.env.MP_PUBLIC_KEY 
+    });
+});
+
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
@@ -212,22 +432,38 @@ app.get('/logout', (req, res, next) => {
     });
 });
 
-app.get('/api/user', (req, res) => {
-    res.json(req.user ? {
-        name: req.user.displayName || req.user.username,
-        avatar: req.user.avatar || req.user.photos?.[0]?.value,
-        id: req.user.id,
-        provider: req.user.provider
-    } : null);
-});
-
-app.get('/api/mp-public-key', (req, res) => res.json({ publicKey: process.env.MP_PUBLIC_KEY }));
+// ========================================
+// RUTAS ESTÁTICAS
+// ========================================
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages', 'index.html'));
 });
 
-// Iniciar servidor
-app.listen(3000, () => {
-    console.log(`Servidor corriendo en ${baseUrl}`);
+// ========================================
+// MANEJO DE ERRORES 404
+// ========================================
+
+app.use((req, res) => {
+    res.status(404).json({ 
+        success: false,
+        message: 'Ruta no encontrada',
+        path: req.path 
+    });
 });
+
+// ========================================
+// INICIAR SERVIDOR
+// ========================================
+
+app.listen(PORT, () => {
+    console.log(`
+    ╔════════════════════════════════════╗
+    ║   🎮 Guardians Shop - Servidor    ║
+    ║   Puerto: ${PORT}                     ║
+    ║   Base URL: ${baseUrl}       ║
+    ╚════════════════════════════════════╝
+    `);
+});
+
+module.exports = app;

@@ -291,283 +291,93 @@
     <div id="footer-container"></div>
 
     <script>
-        // BASE DE DATOS DE PRODUCTOS
-        const productos = {
-            vips: [
-                {
-                    id: 'vip_primitive',
-                    nombre: 'VIP Primitive',
-                    descripcion: 'Acceso básico con beneficios de inicio',
-                    precio: 5.99,
-                    emoji: '🛡️'
-                },
-                {
-                    id: 'vip_tambaleante',
-                    nombre: 'VIP Tambaleante',
-                    descripcion: 'Paquete intermedio con ventajas PvP',
-                    precio: 12.99,
-                    emoji: '⚔️'
-                },
-                {
-                    id: 'vip_aprendiz',
-                    nombre: 'VIP Aprendiz',
-                    descripcion: 'Ideal para jugadores que suben de nivel',
-                    precio: 19.99,
-                    emoji: '📚'
-                },
-                {
-                    id: 'vip_oficial',
-                    nombre: 'VIP Oficial',
-                    descripcion: 'Rango oficial con perks permanentes',
-                    precio: 29.99,
-                    emoji: '👑'
-                },
-                {
-                    id: 'vip_mastercraft',
-                    nombre: 'VIP Mastercraft',
-                    descripcion: 'Artículos Tek y materiales de construcción',
-                    precio: 44.99,
-                    emoji: '🔧'
-                },
-                {
-                    id: 'vip_ascendente',
-                    nombre: 'VIP Ascendente',
-                    descripcion: 'Máximo poder: dinos ascendentes y perks únicos',
-                    precio: 59.99,
-                    emoji: '✨'
-                }
-            ],
-            kits: [
-                {
-                    id: 'kit_starter',
-                    nombre: 'Kit Starter',
-                    descripcion: 'Recursos básicos para comenzar tu aventura',
-                    precio: 3.99,
-                    emoji: '📦'
-                },
-                {
-                    id: 'kit_herramientas',
-                    nombre: 'Kit Herramientas Pro',
-                    descripcion: 'Herramientas de calidad para trabajar más rápido',
-                    precio: 7.99,
-                    emoji: '🔨'
-                },
-                {
-                    id: 'kit_construccion',
-                    nombre: 'Kit Construcción',
-                    descripcion: 'Materiales para construir estructuras avanzadas',
-                    precio: 15.99,
-                    emoji: '🏗️'
-                },
-                {
-                    id: 'kit_combate',
-                    nombre: 'Kit Combate Elite',
-                    descripcion: 'Armas y armaduras de combate supremo',
-                    precio: 24.99,
-                    emoji: '⚡'
-                },
-                {
-                    id: 'kit_sobrevivencia',
-                    nombre: 'Kit Sobrevivencia',
-                    descripcion: 'Todo lo necesario para sobrevivir en el árido',
-                    precio: 9.99,
-                    emoji: '🌵'
-                },
-                {
-                    id: 'kit_completo',
-                    nombre: 'Kit Completo Premium',
-                    descripcion: 'Todos los kits en uno. ¡La mejor opción!',
-                    precio: 49.99,
-                    emoji: '💎'
-                }
-            ],
-            dinos: [
-                {
-                    id: 'dino_raptor',
-                    nombre: 'Raptor Rápido',
-                    descripcion: 'Dinosaurio rápido para exploración',
-                    precio: 12.99,
-                    emoji: '🦖'
-                },
-                {
-                    id: 'dino_rex',
-                    nombre: 'T-Rex Dominante',
-                    descripcion: 'El rey de los dinosaurios en combate',
-                    precio: 39.99,
-                    emoji: '👹'
-                },
-                {
-                    id: 'dino_triceratops',
-                    nombre: 'Triceratops Tanque',
-                    descripcion: 'Defensor perfecto para la tribu',
-                    precio: 34.99,
-                    emoji: '🦏'
-                },
-                {
-                    id: 'dino_pteranodon',
-                    nombre: 'Pteranodon Volador',
-                    descripcion: 'Viaja por los cielos sin límites',
-                    precio: 19.99,
-                    emoji: '🦅'
-                },
-                {
-                    id: 'dino_griffin',
-                    nombre: 'Griffin Mítico',
-                    descripcion: 'Montura legendaria y poderosa',
-                    precio: 59.99,
-                    emoji: '🐉'
-                },
-                {
-                    id: 'dino_phoenix',
-                    nombre: 'Phoenix Ascendente',
-                    descripcion: 'El dinosaurio más raro y poderoso',
-                    precio: 99.99,
-                    emoji: '🔥'
-                }
-            ],
-            blueprints: [
-                {
-                    id: 'bp_casa_basica',
-                    nombre: 'BP Casa Básica',
-                    descripcion: 'Plano para construir una casa resistente',
-                    precio: 4.99,
-                    emoji: '🏠'
-                },
-                {
-                    id: 'bp_fortaleza',
-                    nombre: 'BP Fortaleza Medieval',
-                    descripcion: 'Diseño épico para una fortaleza defensiva',
-                    precio: 12.99,
-                    emoji: '🏰'
-                },
-                {
-                    id: 'bp_granja',
-                    nombre: 'BP Granja de Cultivos',
-                    descripcion: 'Estructura para agricultura eficiente',
-                    precio: 6.99,
-                    emoji: '🌾'
-                },
-                {
-                    id: 'bp_laboratorio_tek',
-                    nombre: 'BP Laboratorio Tek',
-                    descripcion: 'Tecnología avanzada Tek en construcción',
-                    precio: 24.99,
-                    emoji: '🔬'
-                },
-                {
-                    id: 'bp_arena_pvp',
-                    nombre: 'BP Arena PvP',
-                    descripcion: 'Construcción perfecta para combates',
-                    precio: 14.99,
-                    emoji: '⚔️'
-                },
-                {
-                    id: 'bp_castillo_tek',
-                    nombre: 'BP Castillo Tek Supremo',
-                    descripcion: 'La estructura más avanzada y hermosa',
-                    precio: 39.99,
-                    emoji: '👑'
-                }
-            ],
-            tribelog: [
-                {
-                    id: 'log_semanal',
-                    nombre: 'Reporte Semanal de Tribu',
-                    descripcion: 'Análisis completo de actividad de 7 días',
-                    precio: 2.99,
-                    emoji: '📊'
-                },
-                {
-                    id: 'log_mensual',
-                    nombre: 'Reporte Mensual Premium',
-                    descripcion: 'Estadísticas avanzadas del mes completo',
-                    precio: 7.99,
-                    emoji: '📈'
-                },
-                {
-                    id: 'log_analytics',
-                    nombre: 'Analytics Avanzado',
-                    descripcion: 'Datos detallados de combates y eventos',
-                    precio: 14.99,
-                    emoji: '📡'
-                },
-                {
-                    id: 'log_vigilancia',
-                    nombre: 'Sistema de Vigilancia 24/7',
-                    descripcion: 'Monitoreo continuo de tu tribu',
-                    precio: 19.99,
-                    emoji: '👁️'
-                },
-                {
-                    id: 'log_prediccion',
-                    nombre: 'Predictor de Eventos',
-                    descripcion: 'Prevé ataques y eventos importantes',
-                    precio: 24.99,
-                    emoji: '🔮'
-                },
-                {
-                    id: 'log_master',
-                    nombre: 'Master Log Pro',
-                    descripcion: 'El servicio más completo y poderoso',
-                    precio: 39.99,
-                    emoji: '⭐'
-                }
-            ]
-        };
-
+        let productosDB = {};
         let categoriaActual = 'vips';
+
+        // Cargar productos desde API
+        async function cargarProductos() {
+            try {
+                console.log('📦 Cargando productos desde BD...');
+                const response = await fetch('/api/products');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('✅ Productos cargados:', data);
+
+                productosDB = data;
+                
+                // ✅ MOSTRAR PRIMERA CATEGORÍA AL CARGAR
+                mostrarCategoria('vips');
+                
+                // ✅ MARCAR PRIMER BOTÓN COMO ACTIVO
+                const primerBoton = document.querySelector('.category-btn');
+                if (primerBoton) {
+                    primerBoton.classList.add('active');
+                }
+
+            } catch (error) {
+                console.error('❌ Error cargando productos:', error);
+            }
+        }
 
         function mostrarCategoria(categoria) {
             categoriaActual = categoria;
             
-            // Actualizar botones activos
+            // Actualizar botón activo
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.closest('.category-btn').classList.add('active');
-
-            // Mostrar productos
-            const shopContent = document.getElementById('shopContent');
-            const items = productos[categoria];
-
-            if (!items || items.length === 0) {
-                shopContent.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No hay productos en esta categoría</p>
-                    </div>
-                `;
-                return;
+            
+            // Marcar botón activo (solo si viene de un click)
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
             }
 
-            shopContent.innerHTML = items.map(item => `
-                <div class="product-card">
-                    <div class="product-image">${item.emoji}</div>
-                    <div class="product-body">
-                        <h3 class="product-title">${item.nombre}</h3>
-                        <p class="product-description">${item.descripcion}</p>
+            const items = productosDB[categoria] || [];
+            const shopContent = document.getElementById('shopContent');
+
+            // Crear HTML de productos
+            let html = '';
+            items.forEach(item => {
+                html += `
+                    <div class="product-card">
+                        <div class="product-image">${item.emoji}</div>
+                        <div class="product-body">
+                            <h3 class="product-title">${item.nombre}</h3>
+                            <p class="product-description">${item.descripcion}</p>
+                        </div>
+                        <div class="product-footer">
+                            <div class="product-price">$${item.precio.toFixed(2)}</div>
+                            <button onclick="comprar('${item.sku}', '${item.nombre}', ${item.precio})" class="buy-btn">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </div>
                     </div>
-                    <div class="product-footer">
-                        <div class="product-price">$${item.precio.toFixed(2)}</div>
-                        <button class="buy-btn" onclick="comprar('${item.nombre}', ${item.precio}, '${item.id}')">
-                            <i class="fas fa-shopping-cart"></i> Comprar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            });
+
+            shopContent.innerHTML = html || '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay productos en esta categoría</p></div>';
         }
 
         // FUNCIÓN DE COMPRA
-        async function comprar(titulo, precio, itemId) {
+        async function comprar(sku, titulo, precio) {
+            console.log('🛒 Iniciando compra:', { sku, titulo, precio });
+
             const userJson = localStorage.getItem('currentUser');
             
             if (!userJson) {
+                console.warn('⚠️ Usuario no autenticado');
                 alert("⚠️ DEBES INICIAR SESIÓN para comprar");
                 window.location.href = '../pages/login.html';
                 return;
             }
 
             const user = JSON.parse(userJson);
+            console.log('👤 Usuario:', user);
+
             const btn = event.currentTarget;
             const btnHTML = btn.innerHTML;
 
@@ -575,25 +385,33 @@
             btn.disabled = true;
 
             try {
-                const response = await fetch('/crear-orden', {
+                const requestData = {
+                    productSku: sku,
+                    quantity: 1
+                };
+
+                console.log('📤 Enviando solicitud a /api/crear-orden:', requestData);
+
+                const response = await fetch('/api/crear-orden', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: titulo,
-                        price: Number(precio),
-                        quantity: 1,
-                        itemId: itemId,
-                        userId: user.steamId || user.discordId || user.id
-                    })
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(requestData)
                 });
 
+                console.log('📥 Respuesta del servidor:', response.status, response.statusText);
+
                 const data = await response.json();
+                console.log('📊 Datos de respuesta:', data);
 
                 if (!response.ok) {
-                    throw new Error(data.message || "Error del servidor");
+                    throw new Error(data.message || data.details || "Error del servidor");
                 }
 
                 if (data.init_point) {
+                    console.log('✅ Redirigiendo a Mercado Pago...');
                     window.location.href = data.init_point;
                 } else {
                     throw new Error("No se recibió link de Mercado Pago");
@@ -607,27 +425,8 @@
             }
         }
 
-        // Mostrar categoría inicial al cargar
-        window.addEventListener('load', () => {
-            const shopContent = document.getElementById('shopContent');
-            const items = productos['vips'];
-
-            shopContent.innerHTML = items.map(item => `
-                <div class="product-card">
-                    <div class="product-image">${item.emoji}</div>
-                    <div class="product-body">
-                        <h3 class="product-title">${item.nombre}</h3>
-                        <p class="product-description">${item.descripcion}</p>
-                    </div>
-                    <div class="product-footer">
-                        <div class="product-price">$${item.precio.toFixed(2)}</div>
-                        <button class="buy-btn" onclick="comprar('${item.nombre}', ${item.precio}, '${item.id}')">
-                            <i class="fas fa-shopping-cart"></i> Comprar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        });
+        // ✅ Cargar productos al abrir la página
+        window.addEventListener('load', cargarProductos);
     </script>
 </body>
 </html>
