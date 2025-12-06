@@ -4,29 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial - Guardians Shop</title>
-    <link rel="stylesheet" href="../assets/css/output.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/navbar-styles.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'ark': ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        'guardian-dark': '#0A0A0A',
+                        'guardian-panel': '#1C1C1C',
+                        'guardian-gold': '#FFD700',
+                        'guardian-bronze': '#C5A059',
+                        'guardian-cream': '#F2E8C4',
+                    },
+                    boxShadow: {
+                        'neon-gold': '0 0 15px rgba(255, 215, 0, 0.5)',
+                        'neon-bronze': '0 0 15px rgba(197, 160, 89, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { background-color: #111827; color: #f3f4f6; }
-        .table-container { background-color: #1f2937; border-radius: 0.5rem; }
-        th { color: #eab308; } /* Amarillo */
-        td { color: #d1d5db; border-bottom: 1px solid #374151; }
+        body { font-family: 'Rajdhani', sans-serif; }
+
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        /* Tabla de historial */
+        .history-table {
+            background: rgba(28, 28, 28, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .history-table thead {
+            background: rgba(20, 20, 20, 0.95);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .history-table th {
+            color: #FFD700;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .history-table tbody tr {
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .history-table td {
+            color: #D1D5DB;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-pending {
+            background: rgba(255, 215, 0, 0.15);
+            color: #FDE047;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .status-delivered {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86EFAC;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-failed {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
+<body class="bg-guardian-dark text-white min-h-screen flex flex-col">
 
     <div id="navbar-container"></div>
 
     <main class="flex-grow container mx-auto px-4 py-8 mt-20">
-        <h1 class="text-3xl font-bold text-yellow-500 mb-6 text-center">
-            <i class="ri-history-line"></i> Historial de Compras
-        </h1>
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-guardian-gold mb-2">
+                <i class="ri-history-line mr-3"></i>Historial de Compras
+            </h1>
+            <p class="text-gray-400 text-sm">Revisa todas tus órdenes y su estado</p>
+        </div>
 
-        <div class="table-container shadow-lg overflow-hidden mx-auto max-w-4xl">
+        <div class="history-table shadow-lg overflow-hidden mx-auto max-w-5xl">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-700 text-yellow-500 uppercase text-sm">
+                <table class="w-full text-left">
+                    <thead>
                         <tr>
                             <th class="px-6 py-4">Producto</th>
                             <th class="px-6 py-4">Precio</th>
@@ -34,11 +129,11 @@
                             <th class="px-6 py-4">Estado</th>
                         </tr>
                     </thead>
-                    <tbody id="orders-list" class="divide-y divide-gray-700">
+                    <tbody id="orders-list">
                         <tr>
                             <td colspan="4" class="px-6 py-8 text-center text-gray-400">
                                 <i class="ri-loader-4-line animate-spin text-2xl"></i><br>
-                                Cargando tus compras...
+                                <span class="mt-2 block">Cargando tus compras...</span>
                             </td>
                         </tr>
                     </tbody>
@@ -46,8 +141,9 @@
             </div>
         </div>
         
-        <div class="text-center mt-6">
-            <a href="/pages/index.html" class="text-yellow-500 hover:text-yellow-400 underline">
+        <div class="text-center mt-8">
+            <a href="/pages/index.html" class="inline-flex items-center gap-2 text-guardian-gold hover:text-guardian-cream transition duration-300">
+                <i class="ri-arrow-left-line"></i>
                 Volver a la tienda
             </a>
         </div>
@@ -63,27 +159,28 @@
             try {
                 const response = await fetch('/api/my-orders');
                 
-                // Si la respuesta no es OK (ej: 401 no logueado, 500 error servidor)
                 if (!response.ok) {
                     throw new Error(`Error del servidor: ${response.status}`);
                 }
 
                 const orders = await response.json();
-                listContainer.innerHTML = ''; // Limpiar spinner
+                listContainer.innerHTML = '';
 
                 if (!orders || orders.length === 0) {
                     listContainer.innerHTML = `
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-400">
-                                <i class="ri-shopping-cart-line text-4xl mb-2"></i><br>
-                                No has realizado compras aún.
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <i class="ri-shopping-cart-line text-5xl mb-4 block"></i>
+                                    <p class="text-lg">No has realizado compras aún.</p>
+                                    <p class="text-sm text-gray-500 mt-2">¡Comienza a comprar en nuestra tienda!</p>
+                                </div>
                             </td>
                         </tr>`;
                     return;
                 }
 
                 orders.forEach(order => {
-                    // Formatear fecha de forma segura
                     let dateStr = "Fecha desconocida";
                     if (order.createdAt) {
                         dateStr = new Date(order.createdAt).toLocaleDateString('es-ES', {
@@ -91,21 +188,30 @@
                         });
                     }
 
-                    // Colores según estado
-                    let statusBadge = `<span class="px-2 py-1 rounded bg-yellow-900 text-yellow-300 text-xs">Pendiente</span>`;
+                    let statusClass = 'status-pending';
+                    let statusText = 'Pendiente';
+                    let statusIcon = '';
                     
                     if (order.deliveryStatus === 'delivered' || order.status === 'delivered') {
-                        statusBadge = `<span class="px-2 py-1 rounded bg-green-900 text-green-300 text-xs">Entregado ✅</span>`;
+                        statusClass = 'status-delivered';
+                        statusText = 'Entregado';
+                        statusIcon = ' ✅';
                     } else if (order.deliveryStatus === 'failed') {
-                        statusBadge = `<span class="px-2 py-1 rounded bg-red-900 text-red-300 text-xs">Error Entrega ❌</span>`;
+                        statusClass = 'status-failed';
+                        statusText = 'Error Entrega';
+                        statusIcon = ' ❌';
                     }
 
                     const row = `
-                        <tr class="hover:bg-gray-700 transition-colors">
+                        <tr>
                             <td class="px-6 py-4 font-medium text-white">${order.productName || order.item || 'Ítem'}</td>
-                            <td class="px-6 py-4 text-gray-300">$${order.price}</td>
-                            <td class="px-6 py-4 text-gray-400 text-sm">${dateStr}</td>
-                            <td class="px-6 py-4">${statusBadge}</td>
+                            <td class="px-6 py-4">$${order.price}</td>
+                            <td class="px-6 py-4 text-sm">${dateStr}</td>
+                            <td class="px-6 py-4">
+                                <span class="status-badge ${statusClass}">
+                                    ${statusText}${statusIcon}
+                                </span>
+                            </td>
                         </tr>
                     `;
                     listContainer.innerHTML += row;
@@ -115,10 +221,12 @@
                 console.error("Error cargando historial:", error);
                 listContainer.innerHTML = `
                     <tr>
-                        <td colspan="4" class="px-6 py-6 text-center text-red-400">
-                            <i class="ri-error-warning-line text-2xl"></i><br>
-                            No se pudo cargar el historial.<br>
-                            <small class="text-gray-500">${error.message}</small>
+                        <td colspan="4" class="px-6 py-8 text-center">
+                            <div class="text-red-400">
+                                <i class="ri-error-warning-line text-3xl mb-2 block"></i>
+                                <p class="font-medium">No se pudo cargar el historial</p>
+                                <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+                            </div>
                         </td>
                     </tr>`;
             }
