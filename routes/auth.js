@@ -5,13 +5,13 @@ const router = express.Router();
 // ==============================
 // RUTA STEAM
 // ==============================
-router.get('/steam', passport.authenticate('steam'));
+router.get('/steam', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
+    // Passport redirige automáticamente a Steam
+});
 
-router.get('/steam/return',
-  passport.authenticate('steam', { failureRedirect: '/pages/login.html' }),
-  (req, res) => {
-    console.log('✅ Steam autenticado:', req.user._id);
-    if (req.user) {
+router.get('/steam/return', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
+    console.log('✅ Autenticación Steam exitosa');
+     if (req.user) {
         // Guardar sesión y redirigir
         res.redirect('/pages/index.html');
     } else {
@@ -23,7 +23,9 @@ router.get('/steam/return',
 // ==============================
 // RUTA DISCORD
 // ==============================
-router.get('/discord', passport.authenticate('discord'));
+router.get('/discord', passport.authenticate('discord'), (req, res) => {
+    // Passport redirige automáticamente a Discord
+});
 
 router.get('/discord/return',
   passport.authenticate('discord', { failureRedirect: '/pages/login.html' }),

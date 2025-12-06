@@ -10,7 +10,8 @@ const MongoStore = require('connect-mongo').default || require('connect-mongo');
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { Rcon } = require('rcon-client');
 const startOrderProcessing = require('./services/cronJobs');
-
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 // ========================================
 // IMPORTAR MODELOS Y RUTAS
 // ========================================
@@ -149,7 +150,7 @@ passport.use(new SteamStrategy({
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: `${baseUrl}/auth/discord/return`,
+    callbackURL: `${baseUrl}auth/discord/return`,
     scope: ['identify', 'email', 'guilds']
 }, async (accessToken, refreshToken, profile, done) => {
     try {
@@ -214,13 +215,6 @@ app.use('/auth', authRoutes);
 // ========================================
 // RUTA DE PERFIL
 // ========================================
-app.get('/api/perfil', (req, res) => {
-    if (!req.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado en /api/perfil');
-        return res.status(401).json({ error: 'No autenticado' });
-    }
-
-    console.log('✅ Perfil solicitado por:', req.user._id);
 
     const avatar = req.user.avatar || '/assets/img/default-avatar.png';
     const provider = req.user.authProvider || (req.user.steamId ? 'steam' : 'discord');
@@ -283,7 +277,6 @@ app.get('/api/user', (req, res) => {
         id: req.user._id,
         name: req.user.displayName,
         avatar: req.user.avatar,
-        balance: req.user.balance || 0,
         provider: req.user.provider || (req.user.steamId ? 'steam' : 'discord'),
         email: req.user.email
     });
@@ -520,10 +513,7 @@ app.post('/webhook', async (req, res) => {
                         console.error(`⚠️ Falló la entrega RCON. Orden: ${orden._id}`);
                     }
                     
-                    // Actualizar saldo
-                    await User.findByIdAndUpdate(user_id, {
-                        $inc: { balance: product.precio }
-                    });
+                 
 
                     await orden.save();
                 }
@@ -602,6 +592,13 @@ app.listen(PORT, () => {
     ║   Base URL: ${baseUrl}       ║
     ╚════════════════════════════════════╝
     `);
+    
 });
+app.use(helmet());
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100 // límite de 100 peticiones por IP
+});
+app.use('/api/', limiter);
 module.exports = app;
