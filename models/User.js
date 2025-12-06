@@ -1,19 +1,40 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
-  steamId: { type: String, unique: true, sparse: true },
-  discordId: { type: String, unique: true, sparse: true },
-  displayName: String,
-  email: String,
-  avatar: String,
-  provider: String,
-  balance: { type: Number, default: 0 },
-  role: { 
-      type: String, 
-      enum: ['user', 'admin'], 
-      default: 'user' 
-  },
-  createdAt: { type: Date, default: Date.now }
-});
+const userSchema = new mongoose.Schema({
+    discordId: {
+        type: String,
+        index: true
+    },
+    steamId: {
+        type: String,
+        index: true
+    },
+    email: {
+        type: String,
+        index: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    avatar: String,
+    authProvider: {
+        type: String,
+        enum: ['discord', 'steam', 'local'],
+        default: 'local'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    lastLogin: {
+        type: Date,
+        default: Date.now
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
+}, { timestamps: true });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', userSchema);

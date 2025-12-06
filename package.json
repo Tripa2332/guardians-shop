@@ -9,16 +9,22 @@
     "seed": "node scripts/seedProducts.js"
   },
   "dependencies": {
-    "connect-mongo": "^5.0.0",
+    "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
     "express-session": "^1.17.3",
     "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
     "mercadopago": "^2.1.0",
     "mongodb": "^7.0.0",
+<<<<<<< HEAD
     "mongoose": "^7.0.0",
+=======
+    "mongoose": "^8.3.0",
+>>>>>>> 8677ed3e6227a19c729b974ddd396576762884e5
     "node-cron": "^4.2.1",
     "passport": "^0.6.0",
     "passport-discord": "^0.1.1",
@@ -27,5 +33,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
